@@ -1,2 +1,2 @@
-# simple-note-cli
-add simple notes in cli
+# easy-notes
+take easy notes in your command line.
