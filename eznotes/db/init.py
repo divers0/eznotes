@@ -1,6 +1,5 @@
 import os
-import sqlite3
-from . import CONFIG_FOLDER_PATH, DATABASE_PATH
+from . import get_conn_and_cur, CONFIG_FOLDER_PATH, DATABASE_PATH
 
 
 def initiate():
@@ -8,10 +7,11 @@ def initiate():
         os.mkdir(CONFIG_FOLDER_PATH)
     with open(DATABASE_PATH, 'w') as f:
         f.write('')
-    conn = sqlite3.connect(DATABASE_PATH)
-    cur = conn.cursor()
+    # SELECT strftime('%Y-%m-%d %H:%M:%S');
+    conn, cur = get_conn_and_cur()
     cur.execute('''CREATE TABLE IF NOT EXISTS notes(
                     title TEXT,
                     body TEXT,
                     datetime TEXT);
                             ''')
+    conn.commit()
