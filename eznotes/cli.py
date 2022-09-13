@@ -3,9 +3,11 @@ import click
 from .db import insert
 from .exceptions import NoteFileNotSaved
 
+
 @click.group()
 def cli():
     ...
+
 
 @click.command()
 @click.option('-e', '--editor', default='vim')
@@ -31,9 +33,11 @@ def addnote(editor):
 
     insert((title, body))
 
+
 @click.command()
 def list():
     ...
+
 
 commands = (addnote,)
 for command in commands:

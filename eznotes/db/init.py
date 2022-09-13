@@ -7,7 +7,6 @@ def initiate():
         os.mkdir(CONFIG_FOLDER_PATH)
     with open(DATABASE_PATH, 'w') as f:
         f.write('')
-    # SELECT strftime('%Y-%m-%d %H:%M:%S');
     conn, cur = get_conn_and_cur()
     cur.execute('''CREATE TABLE IF NOT EXISTS notes(
                     title TEXT,
