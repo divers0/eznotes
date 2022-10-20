@@ -1,8 +1,8 @@
 import hashlib
 import sqlite3
 from datetime import datetime
-from ..const import DATABASE_PATH
 
+from ..const import DATABASE_PATH
 
 
 def _make_id(note):

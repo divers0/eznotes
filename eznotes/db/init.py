@@ -1,6 +1,7 @@
 import os
-from . import get_conn_and_cur
+
 from ..const import CONFIG_FOLDER_PATH, DATABASE_PATH
+from . import get_conn_and_cur
 
 
 def db_initiate():

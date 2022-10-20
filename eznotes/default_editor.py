@@ -1,7 +1,8 @@
 import os
 import readline
-from .utils import executable_exists
+
 from .const import DEFAULT_EDITOR_FILE_PATH
+from .utils import executable_exists
 
 
 def editor_file_exists():

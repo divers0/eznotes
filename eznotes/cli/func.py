@@ -1,8 +1,9 @@
 import os
-from ..getfull import get_full
-from ..db import insert, get_all_notes
-from ..exceptions import NoteFileNotSaved
+
+from ..db import get_all_notes, insert
 from ..default_editor import get_default_editor
+from ..exceptions import NoteFileNotSaved
+from ..getfull import get_full
 
 
 def _get_new_file():
@@ -61,6 +62,7 @@ def list_view(view):
     if view:
         from rich.console import Console
         from rich.markdown import Markdown
+
         from ..getfull import get_full
 
         console = Console()

@@ -1,7 +1,9 @@
 import click
+
+from ..default_editor import change_default_editor, get_default_editor
+from ..exceptions import NoteFileNotSaved
 from ..utils import executable_exists
 from .func import add_note, list_view
-from ..default_editor import get_default_editor, change_default_editor
 
 
 @click.group(invoke_without_command=True)
@@ -21,4 +23,8 @@ def cli(ctx, view, new_editor):
 @cli.command()
 @click.option('-e', '--editor', default=get_default_editor())
 def addnote(editor):
-    add_note(editor)
+    try:
+        add_note(editor)
+    except NoteFileNotSaved:
+        # TODO
+        print("You need the save the note file.")

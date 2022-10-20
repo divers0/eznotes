@@ -1,11 +1,13 @@
-import os
-import sys
-import signal
 import getpass
-from .const import DATABASE_PATH
+import os
+import signal
+import sys
+
 from rich.console import Console
+
+from .const import DATABASE_PATH
 from .db.init import db_initiate
-from .default_editor import editor_initiate, editor_file_exists
+from .default_editor import editor_file_exists, editor_initiate
 
 
 def signal_handler(sig, frame):
