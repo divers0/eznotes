@@ -1,45 +1,47 @@
 import os
 import click
-from .db import insert
-from .exceptions import NoteFileNotSaved
+from .db import get_all_notes
+from .utils import executable_exists
+from .notes import add_note, edit_note
+from .default_editor import get_default_editor, change_default_editor
 
 
 @click.group()
-def cli():
-    ...
+@click.option('--change-editor', 'new_editor')
+def cli(new_editor):
+    if new_editor:
+        if executable_exists(new_editor):
+            change_default_editor(new_editor)
+        else:
+            print(f"Executable '{new_editor}' does not exist.")
 
 
-@click.command()
-@click.option('-e', '--editor', default='vim')
+@cli.command()
+@click.option('-e', '--editor', default=get_default_editor())
 def addnote(editor):
-    tmp_file_name = '.eznotes'
-    tmp_file_path = os.path.join('/tmp', tmp_file_name)
-
-    counter = 1
-    while os.path.exists(tmp_file_path):
-        tmp_file_path = f"{os.path.join('/tmp', tmp_file_name)} ({counter})"
-        counter += 1
-
-    os.system(f"{editor} '{tmp_file_path}'")
-
-    if not os.path.exists(tmp_file_path):
-        raise NoteFileNotSaved
-
-    with open(tmp_file_path, 'r') as f:
-        text = f.read()
-
-    title = text.split('\n')[0].strip()
-    body = '\n'.join(text.split('\n')[1:])
-
-    insert((title, body))
+    add_note(editor)
 
 
-@click.command()
-def list():
-    ...
+@cli.command()
+@click.argument("view", type=click.Choice(["edit", "view"]), default="edit")
+def list(view):
+    notes = '\n'.join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
+    if notes == '':
+        print("Currently there are no notes. see eznotes --help")
+        return
+    selected_note = os.popen(f"""echo "{notes}" | fzf --reverse --preview "eznotes-getfull {{1}}" --preview-window right,{os.get_terminal_size().columns//2}""").read().strip()
+    if selected_note == '':
+        return
 
+    if view == 'edit':
+        editor = get_default_editor()
+        edit_note(selected_note, editor)
+    else:
+        from rich.console import Console
+        from rich.markdown import Markdown
+        from .getfull import get_full
 
-commands = (addnote,)
-for command in commands:
-    cli.add_command(command)
-
+        console = Console()
+        md = Markdown(get_full(selected_note.split()[0]))
+        with console.pager():
+            console.print(md)

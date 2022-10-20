@@ -1,9 +1,14 @@
-import os
+import hashlib
 import sqlite3
+from datetime import datetime
+from ..const import DATABASE_PATH
 
 
-CONFIG_FOLDER_PATH = os.path.join(os.path.expanduser("~"), ".config", "eznotes")
-DATABASE_PATH = os.path.join(CONFIG_FOLDER_PATH, "notes.db")
+
+def _make_id(note):
+    now = str(datetime.now())
+    note_hash = hashlib.md5((note+now).encode()).hexdigest()
+    return note_hash
 
 
 def get_conn_and_cur():
@@ -11,8 +16,15 @@ def get_conn_and_cur():
     return conn, conn.cursor()
 
 
-def insert(row):
+def insert(row, note):
     conn, cur = get_conn_and_cur()
-    cur.execute("INSERT INTO notes VALUES(?, ?, strftime('%Y-%m-%d %H:%M:%S'))", row)
+    note_hash = _make_id(note)
+    row = (note_hash, *row)
+    cur.execute("INSERT INTO notes VALUES(?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'))", row)
     conn.commit()
 
+
+def get_all_notes():
+    conn, cur = get_conn_and_cur()
+    cur.execute("SELECT * FROM notes;")
+    return cur.fetchall()

@@ -12,6 +12,7 @@ setup(
     entry_points={
         'console_scripts': [
             'eznotes = eznotes:main',
+            'eznotes-getfull = eznotes.getfull:cli_main',
         ],
     },
 )
