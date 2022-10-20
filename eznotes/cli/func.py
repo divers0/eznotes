@@ -1,6 +1,6 @@
 import os
 
-from ..db import get_all_notes, insert
+from ..db import get_all_notes, insert, get_conn_and_cur
 from ..default_editor import get_default_editor
 from ..exceptions import NoteFileNotSaved
 from ..getfull import get_full
@@ -35,8 +35,8 @@ def add_note(editor):
 
 
 def edit_note(note, editor):
-    note_hash = note.split()[0]
-    full_note = get_full(note_hash)
+    note_id = note.split()[0]
+    full_note = get_full(note_id)
 
     tmp_file_path = _get_new_file()
 
@@ -44,9 +44,28 @@ def edit_note(note, editor):
         f.write(full_note)
 
     os.system(f"{editor} '{tmp_file_path}'")
+    # TODO: actually commit the changes into the db :)
 
 
-def list_view(view):
+def delete_note(note_id):
+    from ..utils import markdown_print
+
+    conn, cur = get_conn_and_cur()
+    print(f"'{note_id}' first 3 lines:")
+    markdown_print('\n'.join(get_full(note_id).split('\n')[:4]))
+    
+    user_inp = ''
+    while user_inp not in ['y', 'n']:
+        user_inp = input(f"Are you sure you want to delete the '{note_id}' note? [y/n] ")
+    
+    if user_inp == 'y':
+        cur.execute(f"DELETE FROM notes WHERE id LIKE '{note_id}%'")
+        conn.commit()
+    else:
+        return
+
+
+def list_view(delete, view):
     notes = '\n'.join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
     if notes == '':
         print("Currently there are no notes. see eznotes --help")
@@ -59,6 +78,9 @@ def list_view(view):
     if selected_note == '':
         return
 
+    if delete:
+        return selected_note
+
     if view:
         from rich.console import Console
         from rich.markdown import Markdown
@@ -67,7 +89,7 @@ def list_view(view):
 
         console = Console()
         md = Markdown(get_full(selected_note.split()[0]))
-        with console.pager():
+        with console.pager(styles=True):
             console.print(md)
     else:
         editor = get_default_editor()

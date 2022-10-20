@@ -1,8 +1,10 @@
 from setuptools import find_packages, setup
 
+VERSION = '0.1.0'
+
 setup(
     name='eznotes',
-    version='0.1.0',
+    version=VERSION,
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
