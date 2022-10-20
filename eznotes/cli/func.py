@@ -4,32 +4,26 @@ from ..db import get_all_notes, insert, get_conn_and_cur
 from ..default_editor import get_default_editor
 from ..exceptions import NoteFileNotSaved
 from ..getfull import get_full
+from ..utils import get_title_and_body
+from ..const import TEMP_FILE_PATH
 
 
-def _get_new_file():
-    tmp_file_name = '.eznotes'
-    tmp_file_path = os.path.join('/tmp', tmp_file_name)
-
-    counter = 1
-    while os.path.exists(tmp_file_path):
-        tmp_file_path = f"{os.path.join('/tmp', tmp_file_name)} ({counter})"
-        counter += 1
-
-    return tmp_file_path
+def clean_up_temp_file():
+    if os.path.exists(TEMP_FILE_PATH):
+        os.remove(TEMP_FILE_PATH)
 
 
 def add_note(editor):
-    tmp_file_path = _get_new_file()
-    os.system(f"{editor} '{tmp_file_path}'")
+    clean_up_temp_file()
+    os.system(f"{editor} '{TEMP_FILE_PATH}'")
 
-    if not os.path.exists(tmp_file_path):
+    if not os.path.exists(TEMP_FILE_PATH):
         raise NoteFileNotSaved
 
-    with open(tmp_file_path, 'r') as f:
+    with open(TEMP_FILE_PATH, 'r') as f:
         text = f.read()
 
-    title = text.split('\n')[0].strip()
-    body = '\n'.join(text.split('\n')[1:])
+    title, body = get_title_and_body(text)
 
     insert((title, body), text)
 
@@ -38,13 +32,22 @@ def edit_note(note, editor):
     note_id = note.split()[0]
     full_note = get_full(note_id)
 
-    tmp_file_path = _get_new_file()
-
-    with open(tmp_file_path, 'w') as f:
+    with open(TEMP_FILE_PATH, 'w') as f:
         f.write(full_note)
 
-    os.system(f"{editor} '{tmp_file_path}'")
-    # TODO: actually commit the changes into the db :)
+    os.system(f"{editor} '{TEMP_FILE_PATH}'")
+
+    with open(TEMP_FILE_PATH, 'r') as f:
+        new_note = f.read()
+
+    clean_up_temp_file()
+
+    title, body = get_title_and_body(new_note)
+
+    conn, cur = get_conn_and_cur()
+
+    cur.execute(f"UPDATE notes SET title = ?, body = ? WHERE id LIKE '{note_id}%'", (title, body))
+    conn.commit()
 
 
 def delete_note(note_id):

@@ -37,3 +37,7 @@ def markdown_print(text, print_=True):
         console.print(md)
     else:
         return md
+
+
+def get_title_and_body(note):
+    return note.split('\n')[0].strip(), '\n'.join(note.split('\n')[1:])
