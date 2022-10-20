@@ -20,7 +20,9 @@ def insert(row, note):
     conn, cur = get_conn_and_cur()
     note_hash = _make_id(note)
     row = (note_hash, *row)
-    cur.execute("INSERT INTO notes VALUES(?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'))", row)
+    cur.execute(
+        "INSERT INTO notes VALUES(?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'))", row
+    )
     conn.commit()
 
 

@@ -29,7 +29,11 @@ def list(view):
     if notes == '':
         print("Currently there are no notes. see eznotes --help")
         return
-    selected_note = os.popen(f"""echo "{notes}" | fzf --reverse --preview "eznotes-getfull {{1}}" --preview-window right,{os.get_terminal_size().columns//2}""").read().strip()
+    selected_note = os.popen(
+        f"echo \"{notes}\" | "
+        f"fzf --reverse --preview \"eznotes-getfull {{1}}\" "
+        f"--preview-window right,{os.get_terminal_size().columns//2}"
+    ).read().strip()
     if selected_note == '':
         return
 

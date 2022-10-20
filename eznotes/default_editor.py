@@ -27,7 +27,9 @@ def editor_initiate():
         return
     editor_exists = False
     while not editor_exists:
-        print("Please enter the name of your default editor (it can be changed later)")
+        print(
+            "Please enter the name of your default editor (it can be changed later)"
+        )
         new_editor = input("Editor (leave blank for 'vim'): ")
         if new_editor == '':
             new_editor = 'vim'
