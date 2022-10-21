@@ -1,6 +1,6 @@
 # TODO
  - [x] add a way to have a default editor
- - [ ] make a wrapper for edit_note
+ - [x] make a wrapper for edit_note
  - [ ] Better errors
  - [x] add del
  - [ ] update README.md

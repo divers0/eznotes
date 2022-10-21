@@ -92,7 +92,8 @@ def list_view(edit, view, delete):
         edit_note(note_id, editor)
 
     if not edit and not view and not delete:
-        valid_inputs = ('1', '2', '3', 'edit', 'view', 'delete', 'e', 'v', 'd')
+        from ..const import VALID_INPUTS
+
         print(f"What do you want to do with the note '{note_id}'?")
         print("""1. [1/edit/e]
 2. [2/view/v]
@@ -100,7 +101,7 @@ def list_view(edit, view, delete):
 
         while True:
             user_inp = input(f"[{note_id}] > ").lower()
-            if user_inp in valid_inputs:
+            if user_inp in VALID_INPUTS:
                 break
             if user_inp != '':
                 print(f"'{user_inp}' is not a valid option.")
