@@ -28,8 +28,7 @@ def add_note(editor):
     insert((title, body), text)
 
 
-def edit_note(note, editor):
-    note_id = note.split()[0]
+def edit_note(note_id, editor):
     full_note = get_full(note_id)
 
     with open(TEMP_FILE_PATH, 'w') as f:
@@ -56,11 +55,11 @@ def delete_note(note_id):
     conn, cur = get_conn_and_cur()
     print(f"'{note_id}' first 3 lines:")
     markdown_print('\n'.join(get_full(note_id).split('\n')[:4]))
-    
+
     user_inp = ''
     while user_inp not in ['y', 'n']:
         user_inp = input(f"Are you sure you want to delete the '{note_id}' note? [y/n] ")
-    
+
     if user_inp == 'y':
         cur.execute(f"DELETE FROM notes WHERE id LIKE '{note_id}%'")
         conn.commit()
@@ -68,7 +67,7 @@ def delete_note(note_id):
         return
 
 
-def list_view(delete, view):
+def list_view(edit, view, delete):
     notes = '\n'.join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
     if notes == '':
         print("Currently there are no notes. see eznotes --help")
@@ -81,19 +80,44 @@ def list_view(delete, view):
     if selected_note == '':
         return
 
+    note_id = selected_note.split()[0]
     if delete:
         return selected_note
 
     if view:
-        from rich.console import Console
-        from rich.markdown import Markdown
-
         from ..getfull import get_full
+        from ..utils import markdown_print, pager_view
 
-        console = Console()
-        md = Markdown(get_full(selected_note.split()[0]))
-        with console.pager(styles=True):
-            console.print(md)
-    else:
+        pager_view(markdown_print(get_full(note_id), print_=False))
+    elif edit:
         editor = get_default_editor()
-        edit_note(selected_note, editor)
+        edit_note(note_id, editor)
+
+    if not edit and not view and not delete:
+        valid_inputs = ('1', '2', '3', 'edit', 'view', 'delete', 'e', 'v', 'd')
+        print(f"What do you want to do with the note '{note_id}'?")
+        print("""1. [1/edit/e]
+2. [2/view/v]
+3. [3/delete/d]""")
+
+        while True:
+            user_inp = input(f"[{note_id}] > ").lower()
+            if user_inp in valid_inputs:
+                break
+            if user_inp != '':
+                print(f"'{user_inp}' is not a valid option.")
+        print()
+
+        if user_inp in ('1', 'edit', 'e'):
+            editor = get_default_editor()
+            edit_note(note_id, editor)
+
+        elif user_inp in ('2', 'view', 'v'):
+            from ..getfull import get_full
+            from ..utils import markdown_print, pager_view
+
+            pager_view(markdown_print(get_full(note_id), print_=False))
+
+        elif user_inp in ('3', 'delete', 'v'):
+            delete_note(note_id)
+

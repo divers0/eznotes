@@ -39,5 +39,12 @@ def markdown_print(text, print_=True):
         return md
 
 
+def pager_view(text):
+    from rich.console import Console
+    console = Console()
+    with console.pager(styles=True):
+        console.print(text)
+
+
 def get_title_and_body(note):
     return note.split('\n')[0].strip(), '\n'.join(note.split('\n')[1:])

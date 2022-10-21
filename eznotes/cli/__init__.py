@@ -7,18 +7,19 @@ from .func import add_note, delete_note, list_view
 
 
 @click.group(invoke_without_command=True)
+@click.option("-e", "--edit", is_flag=True)
 @click.option("-v", "--view", is_flag=True)
 @click.option('-d', '--delete', is_flag=True)
 @click.option('--change-editor', 'new_editor')
 @click.pass_context
-def cli(ctx, view, delete, new_editor):
+def cli(ctx, edit, view, delete, new_editor):
     if not ctx.invoked_subcommand:
         if new_editor:
             if executable_exists(new_editor):
                 change_default_editor(new_editor)
             else:
                 print(f"Executable '{new_editor}' does not exist.")
-        selected_note = list_view(delete, view)
+        selected_note = list_view(edit, view, delete)
         if delete:
             if not selected_note:
                 # TODO
