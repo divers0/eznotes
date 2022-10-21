@@ -36,3 +36,7 @@ def is_file_binary(file_path):
     textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
 
     return bool(file_bytes.translate(None, textchars))
+
+
+def flatten(l):
+    return [item for sublist in l for item in sublist]

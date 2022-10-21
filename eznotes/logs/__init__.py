@@ -30,12 +30,8 @@ class DeleteNoteLogs:
 
 
 class ListViewLogs:
-    def __init__(self):
-        self.options_text = [
-            "[[green]1[/green]/[green]edit[/green]/[green]e[/green]]",
-            "[[green]2[/green]/[green]view[/green]/[green]v[/green]]",
-            "[[green]3[green]/[/green]delete[/green]/[green]d[/green]]"
-        ]
+    def __init__(self, options):
+        self.options_text = [options_color_coded_text(x) for x in options]
 
     def first(self, note_id):
         console.print(f"[bold]What do you want to do with the note '{note_id}'?")
@@ -82,7 +78,6 @@ def markdown_print(text, print_=True):
 
 
 def pager_view(text):
-
     with console.pager(styles=True):
         console.print(text)
 
@@ -91,3 +86,7 @@ def panel_print(text, title=None):
     from rich.panel import Panel
 
     console.print(Panel(text, title=title))
+
+
+def options_color_coded_text(options):
+    return f"[{'/'.join([f'[not bold green]{x}[/not bold green]' for x in options])}]"

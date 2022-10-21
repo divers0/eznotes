@@ -109,14 +109,14 @@ def list_view(edit, view, delete):
     if not any((edit, view, delete)):
         from ..const import VALID_INPUTS
         from ..logs import ListViewLogs, NoPromptSuffixPrompt
+        from ..utils import flatten
 
-        logs = ListViewLogs()
+        logs = ListViewLogs(VALID_INPUTS.values())
 
         logs.first(note_id)
         logs.second()
 
-        # user_inp = NoPromptSuffixPrompt.ask(logs.input_prompt(note_id), choices=VALID_INPUTS, default="edit", show_choices=False)
-        user_inp = NoPromptSuffixPrompt.ask(choices=VALID_INPUTS, default="edit")
+        user_inp = NoPromptSuffixPrompt.ask(choices=flatten(VALID_INPUTS.values()), default="edit")
 
         if user_inp in ("1", "edit", "e"):
             editor = get_default_editor()
