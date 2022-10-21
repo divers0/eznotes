@@ -1,6 +1,7 @@
 import click
 
 from ..default_editor import get_default_editor
+from ..exceptions import *
 
 
 @click.group(invoke_without_command=True)
@@ -11,20 +12,26 @@ from ..default_editor import get_default_editor
 @click.pass_context
 def cli(ctx, edit, view, delete, new_editor):
     from ..default_editor import change_default_editor
+    from ..exceptions import ExecutableDoesNotExist
+    from ..logs.error import executable_does_not_exist_error, no_notes_in_db_error
 
     if not ctx.invoked_subcommand:
         if new_editor:
-            change_default_editor(new_editor)
+            try:
+                change_default_editor(new_editor)
+            except ExecutableDoesNotExist:
+                executable_does_not_exist_error(new_editor)
 
         from .func import list_view
 
-        list_view(edit, view, delete)
-
+        try:
+            list_view(edit, view, delete)
+        except NoNotesInDb:
+            no_notes_in_db_error()
 
 @cli.command()
 @click.option("-e", "--editor", default=get_default_editor())
 def add(editor):
-    from ..exceptions import NoteFileNotSaved
     from .func import new_note
 
     try:

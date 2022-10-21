@@ -14,7 +14,7 @@
     which uses the counter (which is also defined at \_\_init\_\_) and console.prints the item at that index of the list
     that we made earlier.
  - [ ] generate the self.options_text at ListViewLogs class instead of hard-coding it.
- - [ ] replace all of the error logs outside of cli with exception (which should be added) and handle
+ - [x] replace all of the error logs outside of cli with exception (which should be added) and handle
        the raised exceptions inside cli.
  - [x] check if the file is binary instead of executable
  - [ ] add "Done." logs.

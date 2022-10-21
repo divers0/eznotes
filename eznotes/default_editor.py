@@ -4,7 +4,6 @@ from rich.prompt import Prompt
 
 from .const import DEFAULT_EDITOR_FILE_PATH
 from .logs import DefaultEditorLogs
-from .logs.error import executable_does_not_exist_error
 from .utils import executable_exists
 
 
@@ -17,7 +16,8 @@ def change_default_editor(new_editor):
         with open(DEFAULT_EDITOR_FILE_PATH, "w") as f:
             f.write(new_editor)
     else:
-        executable_does_not_exist_error(new_editor)
+        from .exceptions import ExecutableDoesNotExist
+        raise ExecutableDoesNotExist
 
 
 def get_default_editor():

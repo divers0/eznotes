@@ -83,11 +83,11 @@ def list_view(edit, view, delete):
     from ..default_editor import get_default_editor
     from ..getfull import get_full
     from ..logs import markdown_print, pager_view
-    from ..logs.error import no_notes_in_db_error
 
     notes = "\n".join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
     if notes == "":
-        no_notes_in_db_error()
+        from ..exceptions import NoNotesInDb
+        raise NoNotesInDb
 
     selected_note = (
         os.popen(
