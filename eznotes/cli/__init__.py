@@ -2,8 +2,12 @@ import click
 
 from ..default_editor import change_default_editor, get_default_editor
 from ..exceptions import NoteFileNotSaved
-from ..utils import executable_exists
 from .func import new_note, edit_note, delete_note, list_view
+from ..logs.error import (
+    note_not_found_error,
+    note_file_not_saved_error,
+    note_file_is_executable_error,
+)
 
 
 @click.group(invoke_without_command=True)
@@ -15,18 +19,9 @@ from .func import new_note, edit_note, delete_note, list_view
 def cli(ctx, edit, view, delete, new_editor):
     if not ctx.invoked_subcommand:
         if new_editor:
-            if executable_exists(new_editor):
-                change_default_editor(new_editor)
-            else:
-                print(f"Executable '{new_editor}' does not exist.")
-        selected_note = list_view(edit, view, delete)
-        if delete:
-            if not selected_note:
-                # TODO
-                print("In order to delete a note, you have to select one first.")
-                return
-            note_id = selected_note.split()[0]
-            delete_note(note_id)
+            change_default_editor(new_editor)
+
+        list_view(edit, view, delete)
 
 
 @cli.command()
@@ -35,12 +30,11 @@ def add(editor):
     try:
         new_note(editor)
     except NoteFileNotSaved:
-        # TODO
-        print("You need the save the note file.")
+        note_file_not_saved_error()
 
 
 @cli.command()
-@click.argumet("note_id")
+@click.argument("note_id")
 @click.option("--editor", default=get_default_editor())
 def edit(note_id, editor):
     from ..db import note_exists
@@ -48,8 +42,7 @@ def edit(note_id, editor):
     if note_exists(note_id):
         edit_note(note_id, editor)
     else:
-        # TODO
-        print(f"'{note_id}' does not belong to any note.")
+        note_not_found_error(note_id)
 
 
 @cli.command(name='del')
@@ -60,8 +53,7 @@ def del_command(note_id):
     if note_exists(note_id):
         delete_note(note_id)
     else:
-        # TODO
-        print(f"'{note_id}' does not belong to any note.")
+        note_not_found_error(note_id)
 
 
 @cli.command()
@@ -72,8 +64,6 @@ def addfromfile(filename):
 
     # check if is a executable
     if os.access(filename, os.X_OK):
-        # TODO
-        print("A note file cannot be a executable.")
-        return
+        note_file_is_executable_error()
     with open(filename) as f:
         add_note_to_db(f.read())

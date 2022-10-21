@@ -1,7 +1,7 @@
 # TODO
  - [x] add a way to have a default editor
  - [x] make a wrapper for edit_note
- - [ ] Better errors
+ - [x] Better logs and errors
  - [x] add del
  - [ ] update README.md
  - [x] ability to add notes from files

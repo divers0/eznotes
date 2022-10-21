@@ -7,6 +7,7 @@ from rich.console import Console
 
 from .const import DATABASE_PATH
 from .db.init import db_initiate
+from .logs.error import program_runned_with_root_access_error
 from .default_editor import editor_file_exists, editor_initiate
 
 
@@ -30,8 +31,7 @@ def check_for_initiation():
 def check_for_root():
     user = getpass.getuser()
     if user == 'root':
-        console.print("Don't Run this app with root access.", style='bold red')
-        sys.exit(1)
+        program_runned_with_root_access_error()
 
 
 def main():
