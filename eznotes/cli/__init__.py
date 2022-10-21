@@ -66,14 +66,26 @@ def del_command(note_id):
 
 @cli.command()
 @click.argument("filename", type=click.Path(exists=True, dir_okay=False))
-def addfromfile(filename):
+@click.option("-t", "--title")
+@click.option("--filename-as-title", is_flag=True)
+def addfromfile(filename, title, filename_as_title):
     import os
 
     from ..db import add_note_to_db
     from ..logs.error import note_file_is_executable_error
+    from ..utils import add_new_title_to_text
 
-    # check if is a executable
+    # check if the file is a executable
     if os.access(filename, os.X_OK):
         note_file_is_executable_error()
+
     with open(filename) as f:
-        add_note_to_db(f.read())
+        note_file = f.read()
+
+    if title or filename_as_title:
+        note_file = add_new_title_to_text(
+            note_file,
+            title if title else filename.replace("_", " ").replace("-", " ")
+        )
+
+    add_note_to_db(note_file)
