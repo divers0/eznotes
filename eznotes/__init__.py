@@ -7,13 +7,12 @@ from rich.console import Console
 
 from .const import DATABASE_PATH
 from .db.init import db_initiate
-from .logs.error import program_runned_with_root_access_error
 from .default_editor import editor_file_exists, editor_initiate
+from .logs.error import program_runned_with_root_access_error
 
 
 def signal_handler(sig, frame):
-    print('\nExiting....')
-    sys.exit(0)
+    sys.exit(sig)
 
 
 signal.signal(signal.SIGINT, signal_handler)
@@ -30,7 +29,7 @@ def check_for_initiation():
 
 def check_for_root():
     user = getpass.getuser()
-    if user == 'root':
+    if user == "root":
         program_runned_with_root_access_error()
 
 
@@ -41,4 +40,5 @@ def main():
         editor_initiate()
     # it has to be here
     from .cli import cli
+
     cli()

@@ -15,36 +15,11 @@ def text_is_markdown(text):
         return True
     if any(1 for _ in re.findall("_[a-zA-Z0-9].*_", text)):
         return True
-    for i in text.split('\n'):
-        if i.startswith(('# ', '- ', ' - ', '1. ')):
+    for i in text.split("\n"):
+        if i.startswith(("# ", "- ", " - ", "1. ")):
             return True
     return False
 
 
-def markdown_print(text, print_=True):
-    if not text_is_markdown(text):
-        if print_:
-            print(text)
-        else:
-            return text
-        return
-    from rich.markdown import Markdown
-
-    md = Markdown(text)
-    if print_:
-        from rich.console import Console
-        console = Console(color_system='standard')
-        console.print(md)
-    else:
-        return md
-
-
-def pager_view(text):
-    from rich.console import Console
-    console = Console()
-    with console.pager(styles=True):
-        console.print(text)
-
-
 def get_title_and_body(note):
-    return note.split('\n')[0].strip(), '\n'.join(note.split('\n')[1:])
+    return note.split("\n")[0].strip(), "\n".join(note.split("\n")[1:])

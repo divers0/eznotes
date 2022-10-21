@@ -1,41 +1,44 @@
 import os
 
-from ..db import get_all_notes, add_note_to_db, get_conn_and_cur
-from ..default_editor import get_default_editor
-from ..exceptions import NoteFileNotSaved
-from ..getfull import get_full
-from ..utils import get_title_and_body
-from ..const import TEMP_FILE_PATH
-from ..logs.error import no_notes_in_db_error
-
 
 def clean_up_temp_file():
+    from ..const import TEMP_FILE_PATH
+
     if os.path.exists(TEMP_FILE_PATH):
         os.remove(TEMP_FILE_PATH)
 
 
 def new_note(editor):
+    from ..const import TEMP_FILE_PATH
+    from ..db import add_note_to_db
+    from ..exceptions import NoteFileNotSaved
+
     clean_up_temp_file()
     os.system(f"{editor} '{TEMP_FILE_PATH}'")
 
     if not os.path.exists(TEMP_FILE_PATH):
         raise NoteFileNotSaved
 
-    with open(TEMP_FILE_PATH, 'r') as f:
+    with open(TEMP_FILE_PATH, "r") as f:
         text = f.read()
 
     add_note_to_db(text)
 
 
 def edit_note(note_id, editor):
+    from ..const import TEMP_FILE_PATH
+    from ..db import get_conn_and_cur
+    from ..getfull import get_full
+    from ..utils import get_title_and_body
+
     full_note = get_full(note_id)
 
-    with open(TEMP_FILE_PATH, 'w') as f:
+    with open(TEMP_FILE_PATH, "w") as f:
         f.write(full_note)
 
     os.system(f"{editor} '{TEMP_FILE_PATH}'")
 
-    with open(TEMP_FILE_PATH, 'r') as f:
+    with open(TEMP_FILE_PATH, "r") as f:
         edited_note = f.read()
 
     clean_up_temp_file()
@@ -44,13 +47,17 @@ def edit_note(note_id, editor):
 
     conn, cur = get_conn_and_cur()
 
-    cur.execute(f"UPDATE notes SET title = ?, body = ? WHERE id LIKE '{note_id}%'", (title, body))
+    cur.execute(
+        f"UPDATE notes SET title = ?, body = ? WHERE id LIKE '{note_id}%'",
+        (title, body),
+    )
     conn.commit()
 
 
 def delete_note(note_id):
-    from ..utils import markdown_print
-    from ..logs import DeleteNoteLogs
+    from ..db import get_conn_and_cur
+    from ..getfull import get_full
+    from ..logs import DeleteNoteLogs, markdown_print
 
     conn, cur = get_conn_and_cur()
 
@@ -58,14 +65,14 @@ def delete_note(note_id):
 
     logs.first()
 
-    markdown_print('\n'.join(get_full(note_id).split('\n')[:4]))
+    markdown_print("\n".join(get_full(note_id).split("\n")[:4]))
 
-    user_inp = ''
-    while user_inp not in ['y', 'n']:
+    user_inp = ""
+    while user_inp not in ["y", "n"]:
         logs.second()
         user_inp = input()
 
-    if user_inp == 'y':
+    if user_inp == "y":
         cur.execute(f"DELETE FROM notes WHERE id LIKE '{note_id}%'")
         conn.commit()
     else:
@@ -73,17 +80,27 @@ def delete_note(note_id):
 
 
 def list_view(edit, view, delete):
-    notes = '\n'.join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
-    if notes == '':
+    from ..db import get_all_notes
+    from ..default_editor import get_default_editor
+    from ..getfull import get_full
+    from ..logs import markdown_print, pager_view
+    from ..logs.error import no_notes_in_db_error
+
+    notes = "\n".join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
+    if notes == "":
         no_notes_in_db_error()
 
-    selected_note = os.popen(
-        f"echo \"{notes}\" | "
-        f"fzf --reverse --preview \"eznotes-getfull {{1}}\" "
-        f"--preview-window right,{os.get_terminal_size().columns//2}"
-    ).read().strip()
+    selected_note = (
+        os.popen(
+            f'echo "{notes}" | '
+            f'fzf --reverse --preview "eznotes-getfull {{1}}" '
+            f"--preview-window right,{os.get_terminal_size().columns//2}"
+        )
+        .read()
+        .strip()
+    )
 
-    if selected_note == '':
+    if selected_note == "":
         return
 
     note_id = selected_note.split()[0]
@@ -103,21 +120,18 @@ def list_view(edit, view, delete):
             if user_inp in VALID_INPUTS:
                 break
             # if the user just pressed enter there is no need to give an error message.
-            if user_inp != '':
+            if user_inp != "":
                 logs.third(user_inp)
         print()
 
-        if user_inp in ('1', 'edit', 'e'):
+        if user_inp in ("1", "edit", "e"):
             editor = get_default_editor()
             edit_note(note_id, editor)
 
-        elif user_inp in ('2', 'view', 'v'):
-            from ..getfull import get_full
-            from ..utils import markdown_print, pager_view
-
+        elif user_inp in ("2", "view", "v"):
             pager_view(markdown_print(get_full(note_id), print_=False))
 
-        elif user_inp in ('3', 'delete', 'v'):
+        elif user_inp in ("3", "delete", "v"):
             delete_note(note_id)
         return
 
@@ -126,9 +140,6 @@ def list_view(edit, view, delete):
         edit_note(note_id, editor)
 
     elif view:
-        from ..getfull import get_full
-        from ..utils import markdown_print, pager_view
-
         pager_view(markdown_print(get_full(note_id), print_=False))
 
     elif delete:

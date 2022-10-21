@@ -7,7 +7,7 @@ from ..const import DATABASE_PATH
 
 def _make_id(note):
     now = str(datetime.now())
-    note_id = hashlib.md5((note+now).encode()).hexdigest()
+    note_id = hashlib.md5((note + now).encode()).hexdigest()
     return note_id
 
 
@@ -15,9 +15,7 @@ def _insert(row, note):
     conn, cur = get_conn_and_cur()
     note_id = _make_id(note)
     row = (note_id, *row)
-    cur.execute(
-        "INSERT INTO notes VALUES(?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'))", row
-    )
+    cur.execute("INSERT INTO notes VALUES(?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'))", row)
     conn.commit()
 
 
