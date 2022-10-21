@@ -26,8 +26,8 @@ def note_file_not_saved_error():
     _error_exit("You need the save file after you finished writing the note.")
 
 
-def note_file_is_executable_error():
-    _error_exit("A note file cannot be a executable.")
+def note_file_is_binary_error():
+    _error_exit("A note file cannot be a binary.")
 
 
 def program_runned_with_root_access_error():

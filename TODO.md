@@ -6,7 +6,7 @@
  - [ ] update README.md
  - [x] ability to add notes from files
  - [ ] ability to export notes (all or one)
- - [ ] improve delete note output
+ - [x] improve delete note output
  - [x] if none of the flags were runned (-v -d -e or whatever), after the fzf screen ask the user what do they want to do with the note
  - [ ] make a parent class named Logs and set all the logs classes in logs to be its child. then change the logic to be like this:
     for examples we have two logs that they need to be printed; instead of making a function for each one of them,
@@ -16,4 +16,4 @@
  - [ ] generate the self.options_text at ListViewLogs class instead of hard-coding it.
  - [ ] replace all of the error logs outside of cli with exception (which should be added) and handle
        the raised exceptions inside cli.
- - [ ] check if the file is binary instead of executable
+ - [x] check if the file is binary instead of executable

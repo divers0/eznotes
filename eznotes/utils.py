@@ -27,3 +27,12 @@ def get_title_and_body(note):
 
 def add_new_title_to_text(note, new_title):
     return "\n".join([new_title+"\n"]+note.split("\n"))
+
+
+def is_file_binary(file_path):
+    with open(file_path, "rb") as f:
+        file_bytes = f.read(1024)
+
+    textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
+
+    return bool(file_bytes.translate(None, textchars))

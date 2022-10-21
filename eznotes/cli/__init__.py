@@ -69,15 +69,13 @@ def del_command(note_id):
 @click.option("-t", "--title")
 @click.option("--filename-as-title", is_flag=True)
 def addfromfile(filename, title, filename_as_title):
-    import os
-
     from ..db import add_note_to_db
-    from ..logs.error import note_file_is_executable_error
-    from ..utils import add_new_title_to_text
+    from ..logs.error import note_file_is_binary_error
+    from ..utils import add_new_title_to_text, is_file_binary
 
     # check if the file is a executable
-    if os.access(filename, os.X_OK):
-        note_file_is_executable_error()
+    if is_file_binary(filename):
+        note_file_is_binary_error()
 
     with open(filename) as f:
         note_file = f.read()
