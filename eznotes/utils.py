@@ -23,3 +23,7 @@ def text_is_markdown(text):
 
 def get_title_and_body(note):
     return note.split("\n")[0].strip(), "\n".join(note.split("\n")[1:])
+
+
+def add_new_title_to_text(note, new_title):
+    return "\n".join([new_title+"\n"]+note.split("\n"))

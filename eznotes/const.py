@@ -8,4 +8,4 @@ DEFAULT_EDITOR_FILE_PATH = os.path.join(CONFIG_FOLDER_PATH, "default_editor")
 
 TEMP_FILE_PATH = "/tmp/.eznotes_tmp"
 
-VALID_INPUTS = ("1", "2", "3", "edit", "view", "delete", "e", "v", "d")
+VALID_INPUTS = ("1", "edit", "e", "2", "view", "v", "3", "delete", "d")

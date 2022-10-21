@@ -1,5 +1,6 @@
 import os
-import readline
+
+from rich.prompt import Prompt
 
 from .const import DEFAULT_EDITOR_FILE_PATH
 from .logs import DefaultEditorLogs
@@ -37,9 +38,7 @@ def editor_initiate():
 
     editor_exists = False
     while not editor_exists:
-        logs.input_prompt()
-        new_editor = input()
-        if new_editor == "":
-            new_editor = "vim"
+        new_editor = Prompt.ask(logs.input_prompt(), default="vim")
         editor_exists = executable_exists(new_editor)
+
     change_default_editor(new_editor)

@@ -55,28 +55,27 @@ def edit_note(note_id, editor):
 
 
 def delete_note(note_id):
+    from rich.prompt import Confirm
+
     from ..db import get_conn_and_cur
     from ..getfull import get_full
-    from ..logs import DeleteNoteLogs, markdown_print
+    from ..logs import DeleteNoteLogs, markdown_print, panel_print
 
     conn, cur = get_conn_and_cur()
 
     logs = DeleteNoteLogs(note_id)
 
-    logs.first()
+    panel_print(
+        markdown_print(
+            "\n".join(get_full(note_id).split("\n")[:4]),
+            print_=False
+        ),
+        title=logs.title()
+    )
 
-    markdown_print("\n".join(get_full(note_id).split("\n")[:4]))
-
-    user_inp = ""
-    while user_inp not in ["y", "n"]:
-        logs.second()
-        user_inp = input()
-
-    if user_inp == "y":
+    if Confirm.ask(logs.input_prompt()):
         cur.execute(f"DELETE FROM notes WHERE id LIKE '{note_id}%'")
         conn.commit()
-    else:
-        return
 
 
 def list_view(edit, view, delete):
@@ -107,22 +106,15 @@ def list_view(edit, view, delete):
 
     if not any((edit, view, delete)):
         from ..const import VALID_INPUTS
-        from ..logs import ListViewLogs
+        from ..logs import ListViewLogs, NoPromptSuffixPrompt
 
         logs = ListViewLogs()
 
         logs.first(note_id)
         logs.second()
 
-        while True:
-            logs.input_prompt(note_id)
-            user_inp = input().lower()
-            if user_inp in VALID_INPUTS:
-                break
-            # if the user just pressed enter there is no need to give an error message.
-            if user_inp != "":
-                logs.third(user_inp)
-        print()
+        # user_inp = NoPromptSuffixPrompt.ask(logs.input_prompt(note_id), choices=VALID_INPUTS, default="edit", show_choices=False)
+        user_inp = NoPromptSuffixPrompt.ask(choices=VALID_INPUTS, default="edit")
 
         if user_inp in ("1", "edit", "e"):
             editor = get_default_editor()
@@ -131,7 +123,7 @@ def list_view(edit, view, delete):
         elif user_inp in ("2", "view", "v"):
             pager_view(markdown_print(get_full(note_id), print_=False))
 
-        elif user_inp in ("3", "delete", "v"):
+        elif user_inp in ("3", "delete", "d"):
             delete_note(note_id)
         return
 
