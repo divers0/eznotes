@@ -38,7 +38,7 @@ class ListViewLogs:
         ]
 
     def first(self, note_id):
-        console.print(f"[bold]What do you want to do with the note [/bold]'{note_id}'?")
+        console.print(f"[bold]What do you want to do with the note '{note_id}'?")
 
     def second(self):
         console.print(
@@ -54,6 +54,14 @@ class ListViewLogs:
 
 class NoPromptSuffixPrompt(Prompt):
     prompt_suffix = " > "
+
+
+def done_log():
+    console.print("\t[bold green]Done.")
+
+
+def selected_note_log(note_id):
+    console.print(f"[bold]Selected note ID: [green]{note_id}")
 
 
 def markdown_print(text, print_=True):

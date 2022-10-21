@@ -1,7 +1,7 @@
 import click
 
 from ..default_editor import get_default_editor
-from ..exceptions import *
+from ..exceptions import NoteFileNotSaved, NoNotesInDatabase
 
 
 @click.group(invoke_without_command=True)
@@ -26,13 +26,15 @@ def cli(ctx, edit, view, delete, new_editor):
 
         try:
             list_view(edit, view, delete)
-        except NoNotesInDb:
+        except NoNotesInDatabase:
             no_notes_in_db_error()
+
 
 @cli.command()
 @click.option("-e", "--editor", default=get_default_editor())
 def add(editor):
     from .func import new_note
+    from ..logs import done_log
 
     try:
         new_note(editor)
@@ -41,6 +43,8 @@ def add(editor):
 
         note_file_not_saved_error()
 
+    done_log()
+
 
 @cli.command()
 @click.argument("note_id")
@@ -48,6 +52,7 @@ def add(editor):
 def edit(note_id, editor):
     from ..db import note_exists
     from .func import edit_note
+    from ..logs import done_log
 
     if note_exists(note_id):
         edit_note(note_id, editor)
@@ -55,6 +60,7 @@ def edit(note_id, editor):
         from ..logs.error import note_not_found_error
 
         note_not_found_error(note_id)
+    done_log()
 
 
 @cli.command(name="del")
@@ -62,6 +68,7 @@ def edit(note_id, editor):
 def del_command(note_id):
     from ..db import note_exists
     from .func import delete_note
+    from ..logs import done_log
 
     if note_exists(note_id):
         delete_note(note_id)
@@ -69,6 +76,7 @@ def del_command(note_id):
         from ..logs.error import note_not_found_error
 
         note_not_found_error(note_id)
+    done_log()
 
 
 @cli.command()
@@ -77,6 +85,7 @@ def del_command(note_id):
 @click.option("--filename-as-title", is_flag=True)
 def addfromfile(filename, title, filename_as_title):
     from ..db import add_note_to_db
+    from ..logs import done_log
     from ..logs.error import note_file_is_binary_error
     from ..utils import add_new_title_to_text, is_file_binary
 
@@ -94,3 +103,4 @@ def addfromfile(filename, title, filename_as_title):
         )
 
     add_note_to_db(note_file)
+    done_log()

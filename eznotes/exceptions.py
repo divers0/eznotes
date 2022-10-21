@@ -4,5 +4,5 @@ class NoteFileNotSaved(Exception):
 class ExecutableDoesNotExist(Exception):
     ...
 
-class NoNotesInDb(Exception):
+class NoNotesInDatabase(Exception):
     ...

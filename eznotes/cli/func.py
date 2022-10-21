@@ -82,12 +82,12 @@ def list_view(edit, view, delete):
     from ..db import get_all_notes
     from ..default_editor import get_default_editor
     from ..getfull import get_full
-    from ..logs import markdown_print, pager_view
+    from ..logs import markdown_print, pager_view, selected_note_log
 
     notes = "\n".join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
     if notes == "":
-        from ..exceptions import NoNotesInDb
-        raise NoNotesInDb
+        from ..exceptions import NoNotesInDatabase
+        raise NoNotesInDatabase
 
     selected_note = (
         os.popen(
@@ -103,6 +103,8 @@ def list_view(edit, view, delete):
         return
 
     note_id = selected_note.split()[0]
+
+    selected_note_log(note_id)
 
     if not any((edit, view, delete)):
         from ..const import VALID_INPUTS

@@ -10,11 +10,14 @@
  - [x] if none of the flags were runned (-v -d -e or whatever), after the fzf screen ask the user what do they want to do with the note
  - [ ] make a parent class named Logs and set all the logs classes in logs to be its child. then change the logic to be like this:
     for examples we have two logs that they need to be printed; instead of making a function for each one of them,
-    make a list at the \_\_init\_\_  with all the log strings in it. then make a function named next_log or whatever
-    which uses the counter (which is also defined at \_\_init\_\_) and console.prints the item at that index of the list
+    make a list at the `__init__`  with all the log strings in it. then make a function named next_log or whatever
+    which uses the counter (which is also defined at `__init__`) and console.prints the item at that index of the list
     that we made earlier.
  - [ ] generate the self.options_text at ListViewLogs class instead of hard-coding it.
  - [x] replace all of the error logs outside of cli with exception (which should be added) and handle
        the raised exceptions inside cli.
  - [x] check if the file is binary instead of executable
- - [ ] add "Done." logs.
+ - [x] add "Done." logs.
+ - [ ] add exit as an option in the prompt after fzf
+ - [ ] add a argument for title in the add command and write that to the file that is going to be opened with editor (body could be added too)
+ - [ ] if user selected view (in the prompt after fzf) don't exit the prompt
