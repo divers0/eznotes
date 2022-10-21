@@ -17,3 +17,4 @@
  - [ ] replace all of the error logs outside of cli with exception (which should be added) and handle
        the raised exceptions inside cli.
  - [x] check if the file is binary instead of executable
+ - [ ] add "Done." logs.
