@@ -3,7 +3,7 @@ import click
 from ..default_editor import change_default_editor, get_default_editor
 from ..exceptions import NoteFileNotSaved
 from ..utils import executable_exists
-from .func import add_note, delete_note, list_view
+from .func import new_note, delete_note, list_view
 
 
 @click.group(invoke_without_command=True)
@@ -33,7 +33,7 @@ def cli(ctx, edit, view, delete, new_editor):
 @click.option('-e', '--editor', default=get_default_editor())
 def add(editor):
     try:
-        add_note(editor)
+        new_note(editor)
     except NoteFileNotSaved:
         # TODO
         print("You need the save the note file.")
@@ -48,3 +48,18 @@ def del_command(note_id):
     else:
         # TODO
         print(f"'{note_id}' does not belong to any note.")
+
+
+@cli.command()
+@click.argument("filename", type=click.Path(exists=True, dir_okay=False))
+def addfromfile(filename):
+    import os
+    from ..db import add_note_to_db
+
+    # check if is a executable
+    if os.access(filename, os.X_OK):
+        # TODO
+        print("A note file cannot be a executable.")
+        return
+    with open(filename) as f:
+        add_note_to_db(f.read())

@@ -4,5 +4,5 @@
  - [ ] Better errors
  - [x] add del
  - [ ] update README.md
- - [ ] ability to add notes from files
+ - [x] ability to add notes from files
  - [x] if none of the flags were runned (-v -d -e or whatever), after the fzf screen ask the user what do they want to do with the note

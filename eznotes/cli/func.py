@@ -1,6 +1,6 @@
 import os
 
-from ..db import get_all_notes, insert, get_conn_and_cur
+from ..db import get_all_notes, add_note_to_db, get_conn_and_cur
 from ..default_editor import get_default_editor
 from ..exceptions import NoteFileNotSaved
 from ..getfull import get_full
@@ -13,7 +13,7 @@ def clean_up_temp_file():
         os.remove(TEMP_FILE_PATH)
 
 
-def add_note(editor):
+def new_note(editor):
     clean_up_temp_file()
     os.system(f"{editor} '{TEMP_FILE_PATH}'")
 
@@ -23,9 +23,7 @@ def add_note(editor):
     with open(TEMP_FILE_PATH, 'r') as f:
         text = f.read()
 
-    title, body = get_title_and_body(text)
-
-    insert((title, body), text)
+    add_note_to_db(text)
 
 
 def edit_note(note_id, editor):
@@ -37,11 +35,11 @@ def edit_note(note_id, editor):
     os.system(f"{editor} '{TEMP_FILE_PATH}'")
 
     with open(TEMP_FILE_PATH, 'r') as f:
-        new_note = f.read()
+        edited_note = f.read()
 
     clean_up_temp_file()
 
-    title, body = get_title_and_body(new_note)
+    title, body = get_title_and_body(edited_note)
 
     conn, cur = get_conn_and_cur()
 
