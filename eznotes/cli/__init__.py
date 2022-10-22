@@ -13,6 +13,7 @@ from ..exceptions import NoteFileNotSaved, NoNotesInDatabase
 def cli(ctx, edit, view, delete, new_editor):
     from ..default_editor import change_default_editor
     from ..exceptions import ExecutableDoesNotExist
+    from ..logs import done_log
     from ..logs.error import executable_does_not_exist_error, no_notes_in_db_error
 
     if not ctx.invoked_subcommand:
@@ -25,7 +26,9 @@ def cli(ctx, edit, view, delete, new_editor):
         from .func import list_view
 
         try:
-            list_view(edit, view, delete)
+            print_done = list_view(edit, view, delete)
+            if edit or delete or print_done:
+                done_log()
         except NoNotesInDatabase:
             no_notes_in_db_error()
 

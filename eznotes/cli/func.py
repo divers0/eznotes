@@ -82,7 +82,7 @@ def list_view(edit, view, delete):
     from ..db import get_all_notes
     from ..default_editor import get_default_editor
     from ..getfull import get_full
-    from ..logs import markdown_print, pager_view, selected_note_log
+    from ..logs import markdown_print, pager_view
 
     notes = "\n".join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
     if notes == "":
@@ -92,7 +92,7 @@ def list_view(edit, view, delete):
     selected_note = (
         os.popen(
             f'echo "{notes}" | '
-            f'fzf --reverse --preview "eznotes-getfull {{1}}" '
+            'fzf --reverse --preview "eznotes-getfull {1}" '
             f"--preview-window right,{os.get_terminal_size().columns//2}"
         )
         .read()
@@ -104,31 +104,6 @@ def list_view(edit, view, delete):
 
     note_id = selected_note.split()[0]
 
-    selected_note_log(note_id)
-
-    if not any((edit, view, delete)):
-        from ..const import VALID_INPUTS
-        from ..logs import ListViewLogs, NoPromptSuffixPrompt
-        from ..utils import flatten
-
-        logs = ListViewLogs(VALID_INPUTS.values())
-
-        logs.first(note_id)
-        logs.second()
-
-        user_inp = NoPromptSuffixPrompt.ask(choices=flatten(VALID_INPUTS.values()), default="edit")
-
-        if user_inp in ("1", "edit", "e"):
-            editor = get_default_editor()
-            edit_note(note_id, editor)
-
-        elif user_inp in ("2", "view", "v"):
-            pager_view(markdown_print(get_full(note_id), print_=False))
-
-        elif user_inp in ("3", "delete", "d"):
-            delete_note(note_id)
-        return
-
     if edit:
         editor = get_default_editor()
         edit_note(note_id, editor)
@@ -138,3 +113,33 @@ def list_view(edit, view, delete):
 
     elif delete:
         delete_note(note_id)
+
+    else:
+        from ..const import VALID_INPUTS
+        from ..logs import ListViewLogs, NoPromptSuffixPrompt, selected_note_log
+        from ..utils import flatten
+
+        selected_note_log(note_id)
+
+        logs = ListViewLogs(VALID_INPUTS.values())
+
+        logs.first(note_id)
+        logs.second()
+
+        while True:
+            user_inp = NoPromptSuffixPrompt.ask(choices=flatten(VALID_INPUTS.values())+["exit"], default="edit")
+
+            if user_inp in VALID_INPUTS["edit"]:
+                editor = get_default_editor()
+                edit_note(note_id, editor)
+                return True
+
+            elif user_inp in VALID_INPUTS["view"]:
+                pager_view(markdown_print(get_full(note_id), print_=False))
+
+            elif user_inp in VALID_INPUTS["delete"]:
+                delete_note(note_id)
+                return True
+
+            elif user_inp == "exit":
+                return
