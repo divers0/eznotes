@@ -8,9 +8,10 @@ from ..exceptions import NoteFileNotSaved, NoNotesInDatabase
 @click.option("-e", "--edit", is_flag=True)
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
+@click.option("-x", "--export", is_flag=True)
 @click.option("--change-editor", "new_editor")
 @click.pass_context
-def cli(ctx, edit, view, delete, new_editor):
+def cli(ctx, edit, view, delete, export, new_editor):
     from ..default_editor import change_default_editor
     from ..exceptions import ExecutableDoesNotExist
     from ..logs import done_log
@@ -26,8 +27,8 @@ def cli(ctx, edit, view, delete, new_editor):
         from .func import list_view
 
         try:
-            print_done = list_view(edit, view, delete)
-            if edit or delete or print_done:
+            print_done = list_view(edit, view, delete, export)
+            if any((edit, delete, export)) or print_done:
                 done_log()
         except NoNotesInDatabase:
             no_notes_in_db_error()
@@ -53,7 +54,7 @@ def add(editor):
 @click.argument("note_id")
 @click.option("--editor", default=get_default_editor())
 def edit(note_id, editor):
-    from ..db import note_exists
+    from ..notes import note_exists
     from .func import edit_note
     from ..logs import done_log
 
@@ -69,7 +70,7 @@ def edit(note_id, editor):
 @cli.command(name="del")
 @click.argument("note_id")
 def del_command(note_id):
-    from ..db import note_exists
+    from ..notes import note_exists
     from .func import delete_note
     from ..logs import done_log
 
@@ -106,4 +107,22 @@ def addfromfile(filename, title, filename_as_title):
         )
 
     add_note_to_db(note_file)
+    done_log()
+
+
+@cli.command()
+@click.argument("note_id")
+@click.argument("path", default=".", type=click.Path(exists=False))
+def export(note_id, path):
+    import os
+    from .func import export_note
+    from ..logs import done_log
+    from ..logs.error import file_not_found_error
+    from ..utils import is_path_writable
+
+    if is_path_writable(path) or os.path.isdir(path):
+        export_note(note_id, path)
+    else:
+        file_not_found_error(path)
+
     done_log()

@@ -21,10 +21,6 @@ def text_is_markdown(text):
     return False
 
 
-def get_title_and_body(note):
-    return note.split("\n")[0].strip(), "\n".join(note.split("\n")[1:])
-
-
 def add_new_title_to_text(note, new_title):
     return "\n".join([new_title+"\n"]+note.split("\n"))
 
@@ -40,3 +36,11 @@ def is_file_binary(file_path):
 
 def flatten(l):
     return [item for sublist in l for item in sublist]
+
+
+def is_path_writable(path):
+    try:
+        open(path, "w").close()
+    except (FileNotFoundError, IsADirectoryError, PermissionError):
+        return False
+    return True

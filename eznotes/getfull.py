@@ -1,7 +1,7 @@
 import os
 import sys
 
-from .db import get_conn_and_cur
+from .notes import get_full_note
 from .logs import markdown_print
 
 
@@ -15,7 +15,7 @@ def cli_main():
     # color_system could also be set on 'truecolor'
     # https://rich.readthedocs.io/en/stable/console.html#color-systems
     console = Console(color_system="standard")
-    md = markdown_print(get_full(note_id), print_=False)
+    md = markdown_print(get_full_note(note_id), print_=False)
     # the reason that i don't use os.get_terminal_size here is that
     # this function gets called when fzf is running and when fzf is running the
     # os.get_terminal_size() function raises an
@@ -26,11 +26,3 @@ def cli_main():
     except TypeError:
         width = os.get_terminal_size().columns // 2
     console.print(md, width=width)
-
-
-def get_full(note_id):
-    conn, cur = get_conn_and_cur()
-
-    cur.execute(f"SELECT * FROM notes WHERE id like '{note_id}%'")
-    note = cur.fetchone()
-    return f"{note[1]}\n{note[2]}"

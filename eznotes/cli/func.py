@@ -28,10 +28,9 @@ def new_note(editor):
 def edit_note(note_id, editor):
     from ..const import TEMP_FILE_PATH
     from ..db import get_conn_and_cur
-    from ..getfull import get_full
-    from ..utils import get_title_and_body
+    from ..notes import get_full_note, get_title_and_body
 
-    full_note = get_full(note_id)
+    full_note = get_full_note(note_id)
 
     with open(TEMP_FILE_PATH, "w") as f:
         f.write(full_note)
@@ -58,7 +57,7 @@ def delete_note(note_id):
     from rich.prompt import Confirm
 
     from ..db import get_conn_and_cur
-    from ..getfull import get_full
+    from ..notes import get_full_note
     from ..logs import DeleteNoteLogs, markdown_print, panel_print
 
     conn, cur = get_conn_and_cur()
@@ -67,7 +66,7 @@ def delete_note(note_id):
 
     panel_print(
         markdown_print(
-            "\n".join(get_full(note_id).split("\n")[:4]),
+            "\n".join(get_full_note(note_id).split("\n")[:4]),
             print_=False
         ),
         title=logs.title()
@@ -76,12 +75,51 @@ def delete_note(note_id):
     if Confirm.ask(logs.input_prompt()):
         cur.execute(f"DELETE FROM notes WHERE id LIKE '{note_id}%'")
         conn.commit()
+        return True
+    return False
 
 
-def list_view(edit, view, delete):
-    from ..db import get_all_notes
+# TODO: move this function elsewhere
+def _export_note_prompt(note_id):
+    from ..notes import get_note_title
+    from ..logs import ExportNoteLogs, NoPromptSuffixPrompt
+    from ..logs.error import error_print
+    from ..logs.messages import file_not_found_error_message
+    from ..utils import is_path_writable
+
+    logs = ExportNoteLogs()
+    logs.first()
+
+    while True:
+        entered_path = NoPromptSuffixPrompt.ask(logs.input_prompt(), default=".")
+
+        if os.path.isdir(entered_path):
+            return os.path.join(entered_path, get_note_title(note_id)[0])
+        elif is_path_writable(entered_path):
+            return entered_path
+        else:
+            error_print(file_not_found_error_message.format(path=entered_path))
+
+
+def export_note(note_id, path):
+    import os
+    from ..notes import get_full_note, get_title_and_body
+
+    full_note = get_full_note(note_id)
+
+    title = get_title_and_body(full_note)[0]
+
+    if os.path.isdir(path):
+        path = os.path.join(path, title)
+
+    with open(path, "w") as f:
+        f.write(full_note)
+
+
+def list_view(edit, view, delete, export):
+    from ..notes import get_all_notes
     from ..default_editor import get_default_editor
-    from ..getfull import get_full
+    from ..notes import get_full_note
     from ..logs import markdown_print, pager_view
 
     notes = "\n".join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
@@ -109,10 +147,20 @@ def list_view(edit, view, delete):
         edit_note(note_id, editor)
 
     elif view:
-        pager_view(markdown_print(get_full(note_id), print_=False))
+        pager_view(markdown_print(get_full_note(note_id), print_=False))
 
     elif delete:
         delete_note(note_id)
+
+    elif export:
+        from ..logs.error import file_not_found_error
+
+        path = _export_note_prompt(note_id)
+
+        try:
+            export_note(note_id, path)
+        except FileNotFoundError:
+            file_not_found_error(path)
 
     else:
         from ..const import VALID_INPUTS
@@ -135,10 +183,22 @@ def list_view(edit, view, delete):
                 return True
 
             elif user_inp in VALID_INPUTS["view"]:
-                pager_view(markdown_print(get_full(note_id), print_=False))
+                pager_view(markdown_print(get_full_note(note_id), print_=False))
 
             elif user_inp in VALID_INPUTS["delete"]:
-                delete_note(note_id)
+                return delete_note(note_id)
+
+            elif user_inp in VALID_INPUTS["export"]:
+                from ..logs.error import file_not_found_error
+
+                path = _export_note_prompt(note_id)
+
+                try:
+                    export_note(note_id, path)
+                except FileNotFoundError:
+                    file_not_found_error(path)
+
+                export_note(note_id, path)
                 return True
 
             elif user_inp == "exit":

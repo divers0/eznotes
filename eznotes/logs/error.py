@@ -2,6 +2,8 @@ import sys
 
 from rich.console import Console
 
+from .messages import *
+
 console = Console()
 
 
@@ -15,27 +17,31 @@ def _error_exit(error_message, exit_status=1):
 
 
 def executable_does_not_exist_error(name):
-    _error_exit(f"Executable [green]'{name}'[/green] does not exist.")
+    _error_exit(executable_does_not_exist_error_message.format(name=name))
 
 
 def note_not_found_error(note_id):
-    _error_exit(f"[green]'{note_id}'[/green] is not the id of any note.")
+    _error_exit(note_not_found_error_message.format(note_id=note_id))
 
 
 def note_file_not_saved_error():
-    _error_exit("You need the save file after you finished writing the note.")
+    _error_exit(note_file_not_saved_error_message)
 
 
 def note_file_is_binary_error():
-    _error_exit("A note file cannot be a binary.")
+    _error_exit(note_file_is_binary_error_message)
 
 
 def program_runned_with_root_access_error():
-    _error_exit("Don't Run this app with root access.")
+    _error_exit(program_runned_with_root_access_error_message)
 
 
 def no_notes_in_db_error():
     _error_exit(
-        "Currently there are no notes. see [bold italic]eznotes --help[/bold italic]",
+        no_notes_in_db_error_message,
         0
     )
+
+
+def file_not_found_error(path):
+    _error_exit(file_not_found_error_message.format(path=path))

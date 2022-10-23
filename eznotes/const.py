@@ -11,5 +11,6 @@ TEMP_FILE_PATH = "/tmp/.eznotes_tmp"
 VALID_INPUTS = {
     "edit": ("1", "edit", "e"),
     "view": ("2", "view", "v"),
-    "delete": ("3", "delete", "d")
+    "delete": ("3", "delete", "d"),
+    "export": ("4", "export", "x"),
 }

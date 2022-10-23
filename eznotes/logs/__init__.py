@@ -48,8 +48,16 @@ class ListViewLogs:
         return f"[bold]\[[green]{note_id}[/]][/]"
 
 
+class ExportNoteLogs:
+    def first(self):
+        console.print("[bold][green]Where[/green] do you want the [green]note[/green] to be [green]saved[/green]?")
+
+    def input_prompt(self):
+        return "[bold blue]Where?[/bold blue]"
+
+
 class NoPromptSuffixPrompt(Prompt):
-    prompt_suffix = " > "
+    prompt_suffix = " "
 
 
 def done_log():
