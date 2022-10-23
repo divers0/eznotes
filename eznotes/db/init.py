@@ -24,7 +24,8 @@ def db_initiate():
                     id TEXT NOT NULL PRIMARY KEY,
                     title TEXT,
                     body TEXT,
-                    datetime TEXT);
+                    date_modified TEXT,
+                    date_created TEXT);
                             """
     )
 

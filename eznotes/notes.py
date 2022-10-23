@@ -3,7 +3,7 @@ from .db import get_conn_and_cur
 
 def get_all_notes():
     cur = get_conn_and_cur()[1]
-    cur.execute("SELECT * FROM notes")
+    cur.execute("SELECT * FROM notes ORDER BY date_modified DESC")
     return cur.fetchall()
 
 

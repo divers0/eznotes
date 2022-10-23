@@ -10,7 +10,7 @@ def clean_up_temp_file():
 
 def new_note(editor):
     from ..const import TEMP_FILE_PATH
-    from ..db import add_note_to_db
+    from ..notes import add_note_to_db
     from ..exceptions import NoteFileNotSaved
 
     clean_up_temp_file()
@@ -47,7 +47,7 @@ def edit_note(note_id, editor):
     conn, cur = get_conn_and_cur()
 
     cur.execute(
-        f"UPDATE notes SET title = ?, body = ? WHERE id LIKE '{note_id}%'",
+        f"UPDATE notes SET title = ?, body = ?, date_modified = strftime('%Y-%m-%d %H:%M:%S') WHERE id LIKE '{note_id}%'",
         (title, body),
     )
     conn.commit()

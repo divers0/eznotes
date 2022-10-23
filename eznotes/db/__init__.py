@@ -15,7 +15,7 @@ def insert(row, note):
     conn, cur = get_conn_and_cur()
     note_id = _make_id(note)
     row = (note_id, *row)
-    cur.execute("INSERT INTO notes VALUES(?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'))", row)
+    cur.execute("INSERT INTO notes VALUES(?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'), strftime('%Y-%m-%d %H:%M:%S'))", row)
     conn.commit()
 
 

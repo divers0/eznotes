@@ -24,5 +24,6 @@
  - [ ] add a argument for title in the add command and write that to the file that is going to be opened with editor (body could be added too)
  - [x] if user selected view (in the prompt after fzf) don't exit the prompt
  - [ ] move the prompt after fzf to a separate function from list view
- - [ ] sort the notes in fzf based on latest updated
+ - [x] sort the notes in fzf based on latest updated
  - [ ] add a list command which **prints** out all the notes.
+ - [ ] add the option to sort the fzf list

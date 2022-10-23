@@ -36,8 +36,13 @@ def check_for_root():
 def main():
     check_for_root()
     if not check_for_initiation():
+        from .logs import done_log
+
         db_initiate()
         editor_initiate()
+
+        done_log()
+        return
     # it has to be here
     from .cli import cli
 
