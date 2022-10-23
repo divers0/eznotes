@@ -1,7 +1,7 @@
 import click
 
 from ..default_editor import get_default_editor
-from ..exceptions import NoteFileNotSaved, NoNotesInDatabase
+from ..exceptions import NoNotesInDatabase, NoteFileNotSaved
 
 
 @click.group(invoke_without_command=True)
@@ -15,7 +15,8 @@ def cli(ctx, edit, view, delete, export, new_editor):
     from ..default_editor import change_default_editor
     from ..exceptions import ExecutableDoesNotExist
     from ..logs import done_log
-    from ..logs.error import executable_does_not_exist_error, no_notes_in_db_error
+    from ..logs.error import (executable_does_not_exist_error,
+                              no_notes_in_db_error)
 
     if not ctx.invoked_subcommand:
         if new_editor:
@@ -37,8 +38,8 @@ def cli(ctx, edit, view, delete, export, new_editor):
 @cli.command()
 @click.option("-e", "--editor", default=get_default_editor())
 def add(editor):
-    from .func import new_note
     from ..logs import done_log
+    from .func import new_note
 
     try:
         new_note(editor)
@@ -54,9 +55,9 @@ def add(editor):
 @click.argument("note_id")
 @click.option("--editor", default=get_default_editor())
 def edit(note_id, editor):
+    from ..logs import done_log
     from ..notes import note_exists
     from .func import edit_note
-    from ..logs import done_log
 
     if note_exists(note_id):
         edit_note(note_id, editor)
@@ -70,9 +71,9 @@ def edit(note_id, editor):
 @cli.command(name="del")
 @click.argument("note_id")
 def del_command(note_id):
+    from ..logs import done_log
     from ..notes import note_exists
     from .func import delete_note
-    from ..logs import done_log
 
     if note_exists(note_id):
         delete_note(note_id)
@@ -88,9 +89,9 @@ def del_command(note_id):
 @click.option("-t", "--title")
 @click.option("--filename-as-title", is_flag=True)
 def addfromfile(filename, title, filename_as_title):
-    from ..db import add_note_to_db
     from ..logs import done_log
     from ..logs.error import note_file_is_binary_error
+    from ..notes import add_note_to_db
     from ..utils import add_new_title_to_text, is_file_binary
 
     # check if the file is a executable
@@ -115,10 +116,11 @@ def addfromfile(filename, title, filename_as_title):
 @click.argument("path", default=".", type=click.Path(exists=False))
 def export(note_id, path):
     import os
-    from .func import export_note
+
     from ..logs import done_log
     from ..logs.error import file_not_found_error
     from ..utils import is_path_writable
+    from .func import export_note
 
     if is_path_writable(path) or os.path.isdir(path):
         export_note(note_id, path)

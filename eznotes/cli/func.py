@@ -10,8 +10,8 @@ def clean_up_temp_file():
 
 def new_note(editor):
     from ..const import TEMP_FILE_PATH
-    from ..notes import add_note_to_db
     from ..exceptions import NoteFileNotSaved
+    from ..notes import add_note_to_db
 
     clean_up_temp_file()
     os.system(f"{editor} '{TEMP_FILE_PATH}'")
@@ -57,8 +57,8 @@ def delete_note(note_id):
     from rich.prompt import Confirm
 
     from ..db import get_conn_and_cur
-    from ..notes import get_full_note
     from ..logs import DeleteNoteLogs, markdown_print, panel_print
+    from ..notes import get_full_note
 
     conn, cur = get_conn_and_cur()
 
@@ -81,10 +81,10 @@ def delete_note(note_id):
 
 # TODO: move this function elsewhere
 def _export_note_prompt(note_id):
-    from ..notes import get_note_title
     from ..logs import ExportNoteLogs, NoPromptSuffixPrompt
     from ..logs.error import error_print
     from ..logs.messages import file_not_found_error_message
+    from ..notes import get_note_title
     from ..utils import is_path_writable
 
     logs = ExportNoteLogs()
@@ -103,6 +103,7 @@ def _export_note_prompt(note_id):
 
 def export_note(note_id, path):
     import os
+
     from ..notes import get_full_note, get_title_and_body
 
     full_note = get_full_note(note_id)
@@ -117,10 +118,9 @@ def export_note(note_id, path):
 
 
 def list_view(edit, view, delete, export):
-    from ..notes import get_all_notes
     from ..default_editor import get_default_editor
-    from ..notes import get_full_note
     from ..logs import markdown_print, pager_view
+    from ..notes import get_all_notes, get_full_note
 
     notes = "\n".join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
     if notes == "":
@@ -164,7 +164,8 @@ def list_view(edit, view, delete, export):
 
     else:
         from ..const import VALID_INPUTS
-        from ..logs import ListViewLogs, NoPromptSuffixPrompt, selected_note_log
+        from ..logs import (ListViewLogs, NoPromptSuffixPrompt,
+                            selected_note_log)
         from ..utils import flatten
 
         selected_note_log(note_id)

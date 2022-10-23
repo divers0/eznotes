@@ -1,8 +1,8 @@
 import os
 import sys
 
-from .notes import get_full_note
 from .logs import markdown_print
+from .notes import get_full_note
 
 
 def cli_main():
