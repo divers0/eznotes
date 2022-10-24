@@ -36,13 +36,30 @@ def cli(ctx, edit, view, delete, export, new_editor):
 
 
 @cli.command()
+@click.argument("title", default="")
+@click.argument("body", default="")
+@click.option(
+    "-f", "--finished",
+    is_flag=True,
+    help="It can be used when you have written the whole note from the command"
+        " itself and not from the editor."
+)
 @click.option("-e", "--editor", default=get_default_editor())
-def add(editor):
+def add(title, body, finished, editor):
     from ..logs import done_log
     from .func import new_note
 
+    if title == "":
+        title = None
+
+    if not title and finished:
+        from ..logs.error import finished_without_text_error
+
+        finished_without_text_error()
+
+
     try:
-        new_note(editor)
+        new_note(title, body, finished, editor)
     except NoteFileNotSaved:
         from ..logs.error import note_file_not_saved_error
 

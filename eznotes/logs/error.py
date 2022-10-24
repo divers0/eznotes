@@ -45,3 +45,7 @@ def no_notes_in_db_error():
 
 def file_not_found_error(path):
     _error_exit(file_not_found_error_message.format(path=path))
+
+
+def finished_without_text_error():
+    _error_exit(finished_without_text_error_message)

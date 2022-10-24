@@ -11,3 +11,5 @@ program_runned_with_root_access_error_message = "Don't Run this app with root ac
 no_notes_in_db_error_message = "Currently there are no notes. see [bold italic]eznotes --help[/bold italic]"
 
 file_not_found_error_message = "The Path [green]'{path}'[/green] does not exist."
+
+finished_without_text_error_message = "You have to first enter the note to be finished with it."

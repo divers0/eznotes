@@ -8,12 +8,22 @@ def clean_up_temp_file():
         os.remove(TEMP_FILE_PATH)
 
 
-def new_note(editor):
+def new_note(title, body, finished, editor):
     from ..const import TEMP_FILE_PATH
     from ..exceptions import NoteFileNotSaved
     from ..notes import add_note_to_db
 
     clean_up_temp_file()
+    if title:
+        preset_text = title+"\n"
+        if body != "":
+            preset_text += body
+        if finished:
+            add_note_to_db(preset_text)
+            return
+        with open(TEMP_FILE_PATH, "w") as f:
+            f.write(preset_text)
+
     os.system(f"{editor} '{TEMP_FILE_PATH}'")
 
     if not os.path.exists(TEMP_FILE_PATH):
