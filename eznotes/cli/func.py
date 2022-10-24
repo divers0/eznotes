@@ -69,10 +69,10 @@ def delete_note(note_id):
             "\n".join(get_full_note(note_id).split("\n")[:4]),
             print_=False
         ),
-        title=logs.title()
+        title=logs.title
     )
 
-    if Confirm.ask(logs.input_prompt()):
+    if Confirm.ask(logs.input_prompt):
         cur.execute(f"DELETE FROM notes WHERE id LIKE '{note_id}%'")
         conn.commit()
         return True
@@ -88,10 +88,10 @@ def _export_note_prompt(note_id):
     from ..utils import is_path_writable
 
     logs = ExportNoteLogs()
-    logs.first()
+    logs.next_log()
 
     while True:
-        entered_path = NoPromptSuffixPrompt.ask(logs.input_prompt(), default=".")
+        entered_path = NoPromptSuffixPrompt.ask(logs.input_prompt, default=".")
 
         if os.path.isdir(entered_path):
             return os.path.join(entered_path, get_note_title(note_id)[0])
@@ -172,8 +172,8 @@ def list_view(edit, view, delete, export):
 
         logs = ListViewLogs(VALID_INPUTS.values())
 
-        logs.first(note_id)
-        logs.second()
+        logs.next_log(note_id=note_id)
+        logs.next_log()
 
         while True:
             user_inp = NoPromptSuffixPrompt.ask(choices=flatten(VALID_INPUTS.values())+["exit"], default="edit")

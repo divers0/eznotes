@@ -34,11 +34,11 @@ def editor_initiate():
         return
 
     logs = DefaultEditorLogs()
-    logs.first()
+    logs.next_log()
 
     editor_exists = False
     while not editor_exists:
-        new_editor = Prompt.ask(logs.input_prompt(), default="vim")
+        new_editor = Prompt.ask(logs.input_prompt, default="vim")
         editor_exists = executable_exists(new_editor)
 
     change_default_editor(new_editor)
