@@ -45,3 +45,15 @@ def get_note_body(note_id):
 
 def get_title_and_body(note_text):
     return note_text.split("\n")[0].strip(), "\n".join(note_text.split("\n")[1:])
+
+
+def get_note_date_created(note_id):
+    cur = get_conn_and_cur()[1]
+    cur.execute(f"SELECT date_created FROM notes WHERE id LIKE '{note_id}%'")
+    return cur.fetchone()
+
+
+def get_note_date_modified(note_id):
+    cur = get_conn_and_cur()[1]
+    cur.execute(f"SELECT date_modified FROM notes WHERE id LIKE '{note_id}%'")
+    return cur.fetchone()

@@ -26,4 +26,4 @@
  - [x] sort the notes in fzf based on latest updated
  - [ ] add a list command which **prints** out all the notes.
  - [ ] add the option to sort the fzf list
- - [ ] when exporting a single note, change the file date to the notes date (fix its metadata)
+ - [x] when exporting a single note, change the file date to the notes date (fix its metadata)

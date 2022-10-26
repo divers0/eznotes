@@ -113,8 +113,14 @@ def _export_note_prompt(note_id):
 
 def export_note(note_id, path):
     import os
+    from datetime import datetime
 
-    from ..notes import get_full_note, get_title_and_body
+    from ..notes import (
+        get_full_note,
+        get_title_and_body,
+        get_note_date_created,
+        get_note_date_modified,
+    )
 
     full_note = get_full_note(note_id)
 
@@ -125,6 +131,14 @@ def export_note(note_id, path):
 
     with open(path, "w") as f:
         f.write(full_note)
+
+    date_created, time_created = get_note_date_created(note_id)[0].split(" ")
+    date_modified, time_modified = get_note_date_modified(note_id)[0].split(" ")
+
+    created_timestamp = datetime(*map(int, date_created.split('-')), *map(int, time_created.split(':'))).timestamp()
+    modified_timestamp = datetime(*map(int, date_modified.split('-')), *map(int, time_modified.split(':'))).timestamp()
+
+    os.utime(path, (created_timestamp, modified_timestamp))
 
 
 def list_view(edit, view, delete, export):
