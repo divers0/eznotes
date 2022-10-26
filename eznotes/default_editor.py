@@ -26,6 +26,14 @@ def get_default_editor():
     return default_editor
 
 
+def find_default_editor_executable():
+    editors = ("nano", "vim", "emacs")
+    for editor in editors:
+        if executable_exists(editor):
+            return editor
+    return None
+
+
 def editor_initiate():
     # added this because sometimes the db might be not
     # configured properly and in those cases this function
@@ -38,7 +46,10 @@ def editor_initiate():
 
     editor_exists = False
     while not editor_exists:
-        new_editor = Prompt.ask(logs.input_prompt, default="vim")
+        new_editor = Prompt.ask(
+            logs.input_prompt,
+            default=find_default_editor_executable()
+        )
         editor_exists = executable_exists(new_editor)
 
     change_default_editor(new_editor)

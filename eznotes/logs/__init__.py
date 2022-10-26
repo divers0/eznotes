@@ -22,7 +22,7 @@ class DefaultEditorLogs(Log):
             "default editor[/bold blue] [bold](it can be changed later)[/bold]"
         ]
 
-        self.input_prompt = "[bold]Editor[/bold] (leave blank for 'vim'): "
+        self.input_prompt = "[bold]Editor[/bold]:"
 
 
 class DeleteNoteLogs(Log):
