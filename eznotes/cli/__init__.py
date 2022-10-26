@@ -9,23 +9,12 @@ from ..exceptions import NoNotesInDatabase, NoteFileNotSaved
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
 @click.option("-x", "--export", is_flag=True)
-@click.option("--change-editor", "new_editor")
 @click.pass_context
-def cli(ctx, edit, view, delete, export, new_editor):
-    from ..default_editor import change_default_editor
-    from ..exceptions import ExecutableDoesNotExist
-    from ..logs import done_log
-    from ..logs.error import (executable_does_not_exist_error,
-                              no_notes_in_db_error)
-
+def cli(ctx, edit, view, delete, export):
     if not ctx.invoked_subcommand:
-        if new_editor:
-            try:
-                change_default_editor(new_editor)
-            except ExecutableDoesNotExist:
-                executable_does_not_exist_error(new_editor)
-
         from .func import list_view
+        from ..logs import done_log
+        from ..logs.error import no_notes_in_db_error
 
         try:
             print_done = list_view(edit, view, delete, export)
@@ -145,3 +134,16 @@ def export(note_id, path):
         file_not_found_error(path)
 
     done_log()
+
+
+@cli.command()
+@click.argument("new_editor")
+def changeeditor(new_editor):
+    from ..default_editor import change_default_editor
+    from ..exceptions import ExecutableDoesNotExist
+    from ..logs.error import executable_does_not_exist_error
+
+    try:
+        change_default_editor(new_editor)
+    except ExecutableDoesNotExist:
+        executable_does_not_exist_error(new_editor)
