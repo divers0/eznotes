@@ -29,6 +29,6 @@
  - [x] when exporting a single note, change the file date to the notes date (fix its metadata)
  - [ ] (A BIG MAYBE) add an "add" element to the fzf list and whenever the user selected that just open an empty buffer in their default editor.
  - [ ] make a wrapper for view
- - [ ] make `del` an alias for `delete`
+ - [x] make `del` an alias for `delete`
  - [ ] when adding a note from a file extract the files date created and date modified and use those valued in the database
- - [ ] change the name of addfromfile to import
+ - [x] change the name of addfromfile to import

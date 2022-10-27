@@ -89,6 +89,20 @@ def delete_note(note_id):
     return False
 
 
+def delete_command(note_id):
+    from ..logs import done_log
+    from ..notes import note_exists
+
+    if note_exists(note_id):
+        delete_note(note_id)
+    else:
+        from ..logs.error import note_not_found_error
+
+        note_not_found_error(note_id)
+    done_log()
+
+
+
 # TODO: move this function elsewhere
 def _export_note_prompt(note_id):
     from ..logs import ExportNoteLogs, NoPromptSuffixPrompt

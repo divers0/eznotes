@@ -74,20 +74,20 @@ def edit(note_id, editor):
     done_log()
 
 
-@cli.command(name="del")
+@cli.command()
+@click.argument("note_id")
+def delete(note_id):
+    from .func import delete_command
+
+    delete_command(note_id)
+
+
+@cli.command(name="del", help="Alias for delete")
 @click.argument("note_id")
 def del_command(note_id):
-    from ..logs import done_log
-    from ..notes import note_exists
-    from .func import delete_note
+    from .func import delete_command
 
-    if note_exists(note_id):
-        delete_note(note_id)
-    else:
-        from ..logs.error import note_not_found_error
-
-        note_not_found_error(note_id)
-    done_log()
+    delete_command(note_id)
 
 
 @cli.command(name="import")
