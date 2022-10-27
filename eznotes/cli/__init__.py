@@ -90,11 +90,11 @@ def del_command(note_id):
     done_log()
 
 
-@cli.command()
+@cli.command(name="import")
 @click.argument("filename", type=click.Path(exists=True, dir_okay=False))
 @click.option("-t", "--title")
 @click.option("--filename-as-title", is_flag=True)
-def addfromfile(filename, title, filename_as_title):
+def import_command(filename, title, filename_as_title):
     from ..logs import done_log
     from ..logs.error import note_file_is_binary_error
     from ..notes import add_note_to_db
