@@ -164,9 +164,9 @@ def export_note(note_id, path):
 
 def list_view(edit, view, delete, export):
     from ..default_editor import get_default_editor
-    from ..notes import get_all_notes, get_full_note
+    from ..notes import get_all_notes
 
-    notes = "\n".join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
+    notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_all_notes())
     if notes == "":
         from ..exceptions import NoNotesInDatabase
         raise NoNotesInDatabase

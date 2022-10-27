@@ -24,7 +24,7 @@
  - [x] if user selected view (in the prompt after fzf) don't exit the prompt
  - [x] move the prompt after fzf to a separate function from list view
  - [x] sort the notes in fzf based on latest updated
- - [ ] add a list command which **prints** out all the notes.
+ - [x] add a list command which **prints** out all the notes.
  - [ ] add the option to sort the fzf list
  - [x] when exporting a single note, change the file date to the notes date (fix its metadata)
  - [ ] (A BIG MAYBE) add an "add" element to the fzf list and whenever the user selected that just open an empty buffer in their default editor.

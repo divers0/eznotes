@@ -106,6 +106,15 @@ def del_command(note_id):
     delete_command(note_id)
 
 
+@cli.command(name="all")
+def all_command():
+    from ..notes import get_all_notes
+    from ..logs import pager_view
+
+    notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes())
+
+    pager_view(notes)
+
 @cli.command(name="import")
 @click.argument("filename", type=click.Path(exists=True, dir_okay=False))
 @click.option("-t", "--title")
