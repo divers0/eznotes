@@ -32,4 +32,4 @@
  - [x] make `del` an alias for `delete`
  - [ ] when adding a note from a file extract the files date created and date modified and use those valued in the database
  - [x] change the name of addfromfile to import
- - [ ] make a general function for del, delete, view, add and edit for following the DRY code
+ - [x] make a general function for del, delete, view, add and edit for following the DRY code

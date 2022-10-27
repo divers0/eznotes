@@ -1,6 +1,19 @@
 import os
 
 
+def note_id_command(note_id, func, *args):
+    from ..logs import done_log
+    from ..notes import note_exists
+
+    if note_exists(note_id):
+        func(note_id, *args)
+    else:
+        from ..logs.error import note_not_found_error
+
+        note_not_found_error(note_id)
+    done_log()
+
+
 def clean_up_temp_file():
     from ..const import TEMP_FILE_PATH
 
@@ -94,20 +107,6 @@ def delete_note(note_id):
         conn.commit()
         return True
     return False
-
-
-def delete_command(note_id):
-    from ..logs import done_log
-    from ..notes import note_exists
-
-    if note_exists(note_id):
-        delete_note(note_id)
-    else:
-        from ..logs.error import note_not_found_error
-
-        note_not_found_error(note_id)
-    done_log()
-
 
 
 # TODO: move this function elsewhere

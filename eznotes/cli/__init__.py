@@ -61,49 +61,33 @@ def add(title, body, finished, editor):
 @click.argument("note_id")
 @click.option("--editor", default=get_default_editor())
 def edit(note_id, editor):
-    from ..logs import done_log
-    from ..notes import note_exists
-    from .func import edit_note
+    from .func import edit_note, note_id_command
 
-    if note_exists(note_id):
-        edit_note(note_id, editor)
-    else:
-        from ..logs.error import note_not_found_error
-
-        note_not_found_error(note_id)
-    done_log()
+    note_id_command(note_id, edit_note, editor)
 
 
 @cli.command()
 @click.argument("note_id")
 def view(note_id):
-    from ..logs import done_log
-    from ..notes import note_exists
-    from .func import view_note
+    from .func import view_note, note_id_command
 
-    if note_exists(note_id):
-        view_note(note_id)
-    else:
-        from ..logs.error import note_not_found_error
-
-        note_not_found_error(note_id)
-    done_log()
+    note_id_command(note_id, view_note)
 
 
 @cli.command()
 @click.argument("note_id")
 def delete(note_id):
-    from .func import delete_command
+    from .func import delete_note, note_id_command
 
-    delete_command(note_id)
+    note_id_command(note_id, delete_note)
 
 
 @cli.command(name="del", help="Alias for delete")
 @click.argument("note_id")
 def del_command(note_id):
-    from .func import delete_command
+    from .func import delete_note, note_id_command
 
-    delete_command(note_id)
+    note_id_command(note_id, delete_note)
 
 
 @cli.command(name="all")
@@ -114,6 +98,7 @@ def all_command():
     notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes())
 
     pager_view(notes)
+
 
 @cli.command(name="import")
 @click.argument("filename", type=click.Path(exists=True, dir_okay=False))
