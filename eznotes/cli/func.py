@@ -63,6 +63,13 @@ def edit_note(note_id, editor):
     conn.commit()
 
 
+def view_note(note_id):
+    from ..logs import markdown_print, pager_view
+    from ..notes import get_full_note
+
+    pager_view(markdown_print(get_full_note(note_id), print_=False))
+
+
 def delete_note(note_id):
     from rich.prompt import Confirm
 
@@ -157,7 +164,6 @@ def export_note(note_id, path):
 
 def list_view(edit, view, delete, export):
     from ..default_editor import get_default_editor
-    from ..logs import markdown_print, pager_view
     from ..notes import get_all_notes, get_full_note
 
     notes = "\n".join([f"{x[0][:8]} - {x[1]}" for x in get_all_notes()])
@@ -185,7 +191,7 @@ def list_view(edit, view, delete, export):
         edit_note(note_id, editor)
 
     elif view:
-        pager_view(markdown_print(get_full_note(note_id), print_=False))
+        view_note(note_id)
 
     elif delete:
         delete_note(note_id)
@@ -222,7 +228,7 @@ def list_view(edit, view, delete, export):
                 return True
 
             elif user_inp in VALID_INPUTS["view"]:
-                pager_view(markdown_print(get_full_note(note_id), print_=False))
+                view_note(note_id)
 
             elif user_inp in VALID_INPUTS["delete"]:
                 return delete_note(note_id)
