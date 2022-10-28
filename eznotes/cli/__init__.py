@@ -98,12 +98,13 @@ def del_command(note_id):
     note_id_command(note_id, delete_note)
 
 
+# TODO: maybe add sorting
 @cli.command(name="all")
 def all_command():
     from ..notes import get_all_notes
     from ..logs import pager_view
 
-    notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes())
+    notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes("alphabetical", "ASC"))
 
     pager_view(notes)
 
