@@ -114,10 +114,14 @@ def all_command():
 @click.option("-t", "--title")
 @click.option("--filename-as-title", is_flag=True)
 def import_command(filename, title, filename_as_title):
+    import os
+
     from ..logs import done_log
     from ..logs.error import note_file_is_binary_error
     from ..notes import add_note_to_db
     from ..utils import add_new_title_to_text, is_file_binary
+
+    from datetime import datetime
 
     # check if the file is a executable
     if is_file_binary(filename):
@@ -126,13 +130,15 @@ def import_command(filename, title, filename_as_title):
     with open(filename) as f:
         note_file = f.read()
 
+    last_modified_date = datetime.fromtimestamp(os.stat(filename)[-2]).strftime("%Y-%m-%d %H:%M:%S")
+
     if title or filename_as_title:
         note_file = add_new_title_to_text(
             note_file,
             title if title else filename.replace("_", " ").replace("-", " ")
         )
 
-    add_note_to_db(note_file)
+    add_note_to_db(note_file, last_modified_date)
     done_log()
 
 

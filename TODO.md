@@ -30,6 +30,6 @@
  - [ ] (A BIG MAYBE) add an "add" element to the fzf list and whenever the user selected that just open an empty buffer in their default editor.
  - [x] make a wrapper for view
  - [x] make `del` an alias for `delete`
- - [ ] when adding a note from a file extract the files date created and date modified and use those valued in the database
+ - [x] when adding a note from a file extract the files date created and date modified and use those valued in the database
  - [x] change the name of addfromfile to import
  - [x] make a general function for del, delete, view, add and edit for following the DRY code

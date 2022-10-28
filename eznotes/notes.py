@@ -25,12 +25,12 @@ def note_exists(note_id):
     return True
 
 
-def add_note_to_db(text):
+def add_note_to_db(text, date=None):
     from .db import insert
 
     title, body = get_title_and_body(text)
 
-    insert((title, body), text)
+    insert((title, body), text, date)
 
 
 def get_note_title(note_id):

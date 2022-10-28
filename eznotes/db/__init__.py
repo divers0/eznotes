@@ -11,11 +11,15 @@ def _make_id(note):
     return note_id
 
 
-def insert(row, note):
+def insert(row, note, date=None):
     conn, cur = get_conn_and_cur()
     note_id = _make_id(note)
-    row = (note_id, *row)
-    cur.execute("INSERT INTO notes VALUES(?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'), strftime('%Y-%m-%d %H:%M:%S'))", row)
+    row = [note_id, *row]
+    if date:
+        row += [date, date]
+        cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?)", row)
+    else:
+        cur.execute("INSERT INTO notes VALUES(?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'))", row)
     conn.commit()
 
 
