@@ -218,8 +218,9 @@ def list_view(edit, view, delete, export, sort_by, order):
         logs.next_log(note_id=note_id)
         logs.next_log()
 
+        choices = flatten(VALID_INPUTS.values())+["exit"]
         while True:
-            user_inp = NoPromptSuffixPrompt.ask(choices=flatten(VALID_INPUTS.values())+["exit"], default="edit")
+            user_inp = NoPromptSuffixPrompt.ask(f"[bold white]\[{'/'.join(choices)}]", choices=choices, default="edit", show_choices=False)
 
             if user_inp in VALID_INPUTS["edit"]:
                 editor = get_default_editor()
