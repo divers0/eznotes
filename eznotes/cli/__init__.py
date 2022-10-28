@@ -9,15 +9,23 @@ from ..exceptions import NoNotesInDatabase, NoteFileNotSaved
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
 @click.option("-x", "--export", is_flag=True)
+@click.option("-s", "--sort-by", default="date_modified", type=click.Choice(["alphabetical", "date_created", "date_modified"]))
+@click.option("--asc/--desc", "order", default=True)
 @click.pass_context
-def cli(ctx, edit, view, delete, export):
+def cli(ctx, edit, view, delete, export, sort_by, order):
     if not ctx.invoked_subcommand:
         from .func import list_view
         from ..logs import done_log
         from ..logs.error import no_notes_in_db_error
 
         try:
-            print_done = list_view(edit, view, delete, export)
+            # If it was on ascending
+            if order:
+                order = "ASC"
+            # If it was on descending
+            else:
+                order = "DESC"
+            print_done = list_view(edit, view, delete, export, sort_by, order)
             if any((edit, delete, export)) or print_done:
                 done_log()
         except NoNotesInDatabase:
@@ -33,7 +41,7 @@ def cli(ctx, edit, view, delete, export):
     help="It can be used when you have written the whole note from the command"
         " itself and not from the editor."
 )
-@click.option("-e", "--editor", default=get_default_editor())
+@click.option("-e", "--editor", default=get_default_editor(), show_default=True)
 def add(title, body, finished, editor):
     from ..logs import done_log
     from .func import new_note
@@ -59,7 +67,7 @@ def add(title, body, finished, editor):
 
 @cli.command()
 @click.argument("note_id")
-@click.option("--editor", default=get_default_editor())
+@click.option("--editor", default=get_default_editor(), show_default=True)
 def edit(note_id, editor):
     from .func import edit_note, note_id_command
 

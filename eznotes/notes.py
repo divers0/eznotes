@@ -1,9 +1,11 @@
 from .db import get_conn_and_cur
 
 
-def get_all_notes():
+def get_all_notes(sort_by, order):
     cur = get_conn_and_cur()[1]
-    cur.execute("SELECT * FROM notes ORDER BY date_modified DESC")
+    if sort_by == "alphabetical":
+        sort_by = "title"
+    cur.execute(f"SELECT * FROM notes ORDER BY {sort_by} {order}")
     return cur.fetchall()
 
 

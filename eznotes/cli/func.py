@@ -161,11 +161,11 @@ def export_note(note_id, path):
     os.utime(path, (created_timestamp, modified_timestamp))
 
 
-def list_view(edit, view, delete, export):
+def list_view(edit, view, delete, export, sort_by, order):
     from ..default_editor import get_default_editor
     from ..notes import get_all_notes
 
-    notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_all_notes())
+    notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_all_notes(sort_by, order))
     if notes == "":
         from ..exceptions import NoNotesInDatabase
         raise NoNotesInDatabase
