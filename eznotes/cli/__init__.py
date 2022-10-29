@@ -133,6 +133,8 @@ def import_command(filename, title, filename_as_title):
     last_modified_date = datetime.fromtimestamp(os.stat(filename)[-2]).strftime("%Y-%m-%d %H:%M:%S")
 
     if title or filename_as_title:
+        if filename_as_title and filename.endswith(".txt"):
+            filename = os.path.splitext(filename)[0]
         note_file = add_new_title_to_text(
             note_file,
             title if title else filename.replace("_", " ").replace("-", " ")

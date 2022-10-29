@@ -149,6 +149,9 @@ def export_note(note_id, path):
     if os.path.isdir(path):
         path = os.path.join(path, title)
 
+    if not path.endswith(".txt"):
+        path += ".txt"
+
     with open(path, "w") as f:
         f.write(full_note)
 
