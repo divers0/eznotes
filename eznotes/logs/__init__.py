@@ -32,7 +32,7 @@ class DeleteNoteLogs(Log):
         self.note_id = note_id
         self.title = f"[green]'{self.note_id}'[/] [bold]first 3 lines:[/bold]"
         self.input_prompt =  (
-            "[bold]Are you sure[/bold] you want to [bold red]delete[/bold red]"
+            "[bold]Are you sure[/bold] you want to [bold red]permanently delete[/bold red]"
             f" the [green]'{self.note_id}'[/green] note?"
         )
 

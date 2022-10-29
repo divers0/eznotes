@@ -34,5 +34,5 @@
  - [x] change the name of addfromfile to import
  - [x] make a general function for del, delete, view, add and edit for following the DRY code
  - [x] add .txt extension at the end of exported notes (and try to handle that the other way around (in the import function))
- - [ ] in the deleting prompt mention the fact that the delete is permanent
+ - [x] in the deleting prompt mention the fact that the delete is permanent
  - [ ] add trash?
