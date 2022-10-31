@@ -135,12 +135,8 @@ def export_note(note_id, path):
     import os
     from datetime import datetime
 
-    from ..notes import (
-        get_full_note,
-        get_title_and_body,
-        get_note_date_created,
-        get_note_date_modified,
-    )
+    from ..notes import (get_full_note, get_note_date_created,
+                         get_note_date_modified, get_title_and_body)
 
     full_note = get_full_note(note_id)
 

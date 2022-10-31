@@ -6,7 +6,7 @@
  - [ ] update README.md
  - [x] ability to add notes from files
  - [x] ability to export one note
- - [ ] ability to export all of the notes
+ - [x] ability to export all of the notes
  - [x] improve delete note output
  - [x] if none of the flags were runned (-v -d -e or whatever), after the fzf screen ask the user what do they want to do with the note
  - [x] make a parent class named Logs and set all the logs classes in logs to be its child. then change the logic to be like this:
@@ -36,3 +36,5 @@
  - [x] add .txt extension at the end of exported notes (and try to handle that the other way around (in the import function))
  - [x] in the deleting prompt mention the fact that the delete is permanent
  - [ ] add trash?
+ - [ ] better `--help` output
+ - [ ] add colors to the fzf (that opens the possibility to themes in the future?)

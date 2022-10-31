@@ -1,7 +1,6 @@
 import click
 
 from ..default_editor import get_default_editor
-from ..exceptions import NoNotesInDatabase, NoteFileNotSaved
 
 
 @click.group(invoke_without_command=True)
@@ -14,9 +13,10 @@ from ..exceptions import NoNotesInDatabase, NoteFileNotSaved
 @click.pass_context
 def cli(ctx, edit, view, delete, export, sort_by, order):
     if not ctx.invoked_subcommand:
-        from .func import list_view
+        from ..exceptions import NoNotesInDatabase
         from ..logs import done_log
         from ..logs.error import no_notes_in_db_error
+        from .func import list_view
 
         try:
             # If it was on ascending
@@ -43,6 +43,7 @@ def cli(ctx, edit, view, delete, export, sort_by, order):
 )
 @click.option("-e", "--editor", default=get_default_editor(), show_default=True)
 def add(title, body, finished, editor):
+    from ..exceptions import NoteFileNotSaved
     from ..logs import done_log
     from .func import new_note
 
@@ -77,7 +78,7 @@ def edit(note_id, editor):
 @cli.command()
 @click.argument("note_id")
 def view(note_id):
-    from .func import view_note, note_id_command
+    from .func import note_id_command, view_note
 
     note_id_command(note_id, view_note)
 
@@ -101,8 +102,8 @@ def del_command(note_id):
 # TODO: maybe add sorting
 @cli.command(name="all")
 def all_command():
-    from ..notes import get_all_notes
     from ..logs import pager_view
+    from ..notes import get_all_notes
 
     notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes("alphabetical", "ASC"))
 
@@ -115,13 +116,12 @@ def all_command():
 @click.option("--filename-as-title", is_flag=True)
 def import_command(filename, title, filename_as_title):
     import os
+    from datetime import datetime
 
     from ..logs import done_log
     from ..logs.error import note_file_is_binary_error
     from ..notes import add_note_to_db
     from ..utils import add_new_title_to_text, is_file_binary
-
-    from datetime import datetime
 
     # check if the file is a executable
     if is_file_binary(filename):
@@ -154,6 +154,16 @@ def export(note_id, path):
     from ..logs.error import file_not_found_error
     from ..utils import is_path_writable
     from .func import export_note
+
+    if note_id == "all":
+        from ..notes import export_notes_to_zip
+
+        if os.path.isdir(path):
+            path = os.path.join(path, "notes")
+
+        export_notes_to_zip(path)
+
+        return
 
     if is_path_writable(path) or os.path.isdir(path):
         export_note(note_id, path)
