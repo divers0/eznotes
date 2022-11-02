@@ -25,8 +25,9 @@ def db_initiate():
                     title TEXT,
                     body TEXT,
                     date_modified TEXT,
-                    date_created TEXT);
-                            """
+                    date_created TEXT,
+                    added_to_trash INTEGER,
+                    trash_date TEXT);"""
     )
 
     conn.commit()

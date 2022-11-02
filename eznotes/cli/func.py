@@ -70,7 +70,7 @@ def edit_note(note_id, editor):
     conn, cur = get_conn_and_cur()
 
     cur.execute(
-        f"UPDATE notes SET title = ?, body = ?, date_modified = strftime('%Y-%m-%d %H:%M:%S') WHERE id LIKE '{note_id}%'",
+        f"UPDATE notes SET title = ?, body = ?, date_modified = datetime('now', 'localtime') WHERE id LIKE '{note_id}%'",
         (title, body),
     )
     conn.commit()
@@ -81,6 +81,26 @@ def view_note(note_id):
     from ..notes import get_full_note
 
     pager_view(markdown_print(get_full_note(note_id), print_=False))
+
+
+def trash_note(note_id):
+    from ..db import get_conn_and_cur
+
+    conn, cur = get_conn_and_cur()
+
+    cur.execute(f"UPDATE notes SET added_to_trash = 1, trash_date = datetime('now', 'localtime') WHERE id LIKE '{note_id}%'")
+
+    conn.commit()
+
+
+def empty_trash():
+    from ..db import get_conn_and_cur
+
+    conn, cur = get_conn_and_cur()
+
+    cur.execute("DELETE FROM notes WHERE added_to_trash = 1")
+
+    conn.commit()
 
 
 def delete_note(note_id):
@@ -160,11 +180,132 @@ def export_note(note_id, path):
     os.utime(path, (created_timestamp, modified_timestamp))
 
 
-def list_view(edit, view, delete, export, sort_by, order):
-    from ..default_editor import get_default_editor
-    from ..notes import get_all_notes
+def restore_note(note_id):
+    from ..db import get_conn_and_cur
 
-    notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_all_notes(sort_by, order))
+    conn, cur = get_conn_and_cur()
+
+    cur.execute(
+        f"UPDATE notes SET added_to_trash = 0, trash_date = NULL WHERE id LIKE '{note_id}%'"
+    )
+    conn.commit()
+
+
+def get_relevant_func(name):
+    # TODO: (MAYBE) move this to const
+    func_names = {
+        "edit": edit_note,
+        "view": view_note,
+        "delete": trash_note,
+        "export": export_note,
+        "restore": restore_note,
+        "delete2": delete_note,
+    }
+    return func_names[name]
+
+
+def run_relevant_func(note_id=None, **args):
+    func = [(name, get_relevant_func(name)) for name, true in zip(args.keys(), args.values()) if true][0]
+    if func[0] == "edit":
+        from ..default_editor import get_default_editor
+
+        editor = get_default_editor()
+        edit_note(note_id, editor)
+        return
+    elif func[0] == "export":
+        from ..logs.error import file_not_found_error
+
+        path = _export_note_prompt(note_id)
+
+        try:
+            export_note(note_id, path)
+        except FileNotFoundError:
+            file_not_found_error(path)
+        return
+
+    return func[1](note_id)
+
+
+def trash_prompt(note_id):
+    from ..const import TRASH_VALID_INPUTS
+    from ..logs import (ListViewLogs, NoPromptSuffixPrompt,
+                        selected_note_log)
+    from ..utils import flatten
+
+    selected_note_log(note_id)
+
+    logs = ListViewLogs(TRASH_VALID_INPUTS.values())
+
+    logs.next_log(note_id=note_id)
+    logs.next_log()
+
+    choices = flatten(TRASH_VALID_INPUTS.values())+["exit"]
+    while True:
+        user_inp = NoPromptSuffixPrompt.ask(f"[bold white]\[{'/'.join(choices)}]", choices=choices, default="delete", show_choices=False)
+
+        if user_inp == "exit":
+            return
+
+        elif user_inp in TRASH_VALID_INPUTS["delete"]:
+            delete_note(note_id)
+            return True
+
+        elif user_inp in TRASH_VALID_INPUTS["view"]:
+            view_note(note_id)
+
+        elif user_inp in TRASH_VALID_INPUTS["restore"]:
+            restore_note(note_id)
+            return True
+
+
+def notes_prompt(note_id):
+    from ..default_editor import get_default_editor
+    from ..const import NOTES_VALID_INPUTS
+    from ..logs import (ListViewLogs, NoPromptSuffixPrompt,
+                        selected_note_log)
+    from ..utils import flatten
+
+    selected_note_log(note_id)
+
+    logs = ListViewLogs(NOTES_VALID_INPUTS.values())
+
+    logs.next_log(note_id=note_id)
+    logs.next_log()
+
+    choices = flatten(NOTES_VALID_INPUTS.values())+["exit"]
+    while True:
+        user_inp = NoPromptSuffixPrompt.ask(f"[bold white]\[{'/'.join(choices)}]", choices=choices, default="edit", show_choices=False)
+
+        if user_inp == "exit":
+            return
+
+        elif user_inp in NOTES_VALID_INPUTS["edit"]:
+            editor = get_default_editor()
+            edit_note(note_id, editor)
+            return True
+
+        elif user_inp in NOTES_VALID_INPUTS["view"]:
+            view_note(note_id)
+
+        elif user_inp in NOTES_VALID_INPUTS["delete"]:
+            trash_note(note_id)
+            return True
+
+        elif user_inp in NOTES_VALID_INPUTS["export"]:
+            from ..logs.error import file_not_found_error
+
+            path = _export_note_prompt(note_id)
+
+            try:
+                export_note(note_id, path)
+            except FileNotFoundError:
+                file_not_found_error(path)
+
+            export_note(note_id, path)
+            return True
+
+
+def list_view(notes, is_trash, **commands):
     if notes == "":
         from ..exceptions import NoNotesInDatabase
         raise NoNotesInDatabase
@@ -184,66 +325,11 @@ def list_view(edit, view, delete, export, sort_by, order):
 
     note_id = selected_note.split()[0]
 
-    if edit:
-        editor = get_default_editor()
-        edit_note(note_id, editor)
+    if any(commands.values()):
+        return run_relevant_func(note_id, **commands)
 
-    elif view:
-        view_note(note_id)
-
-    elif delete:
-        delete_note(note_id)
-
-    elif export:
-        from ..logs.error import file_not_found_error
-
-        path = _export_note_prompt(note_id)
-
-        try:
-            export_note(note_id, path)
-        except FileNotFoundError:
-            file_not_found_error(path)
-
+    if is_trash:
+        return trash_prompt(note_id)
     else:
-        from ..const import VALID_INPUTS
-        from ..logs import (ListViewLogs, NoPromptSuffixPrompt,
-                            selected_note_log)
-        from ..utils import flatten
+        return notes_prompt(note_id)
 
-        selected_note_log(note_id)
-
-        logs = ListViewLogs(VALID_INPUTS.values())
-
-        logs.next_log(note_id=note_id)
-        logs.next_log()
-
-        choices = flatten(VALID_INPUTS.values())+["exit"]
-        while True:
-            user_inp = NoPromptSuffixPrompt.ask(f"[bold white]\[{'/'.join(choices)}]", choices=choices, default="edit", show_choices=False)
-
-            if user_inp in VALID_INPUTS["edit"]:
-                editor = get_default_editor()
-                edit_note(note_id, editor)
-                return True
-
-            elif user_inp in VALID_INPUTS["view"]:
-                view_note(note_id)
-
-            elif user_inp in VALID_INPUTS["delete"]:
-                return delete_note(note_id)
-
-            elif user_inp in VALID_INPUTS["export"]:
-                from ..logs.error import file_not_found_error
-
-                path = _export_note_prompt(note_id)
-
-                try:
-                    export_note(note_id, path)
-                except FileNotFoundError:
-                    file_not_found_error(path)
-
-                export_note(note_id, path)
-                return True
-
-            elif user_inp == "exit":
-                return

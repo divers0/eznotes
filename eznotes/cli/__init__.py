@@ -1,5 +1,6 @@
 import click
 
+from ..db import get_conn_and_cur
 from ..default_editor import get_default_editor
 
 
@@ -12,24 +13,56 @@ from ..default_editor import get_default_editor
 @click.option("--asc/--desc", "order", default=True)
 @click.pass_context
 def cli(ctx, edit, view, delete, export, sort_by, order):
+    conn, cur = get_conn_and_cur()
+
+    # Deleting notes that have been in the trash for 30 days or more
+    cur.execute("DELETE FROM notes WHERE trash_date <= datetime('now','-30 day')")
+
+    conn.commit()
     if not ctx.invoked_subcommand:
         from ..exceptions import NoNotesInDatabase
         from ..logs import done_log
         from ..logs.error import no_notes_in_db_error
         from .func import list_view
+        from ..notes import get_all_notes
 
+        order = "ASC" if order else "DESC"
+
+        notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_all_notes(sort_by, order))
         try:
-            # If it was on ascending
-            if order:
-                order = "ASC"
-            # If it was on descending
-            else:
-                order = "DESC"
-            print_done = list_view(edit, view, delete, export, sort_by, order)
-            if any((edit, delete, export)) or print_done:
-                done_log()
+            print_done = list_view(notes, False, edit=edit, view=view, delete=delete, export=export)
+
         except NoNotesInDatabase:
             no_notes_in_db_error()
+
+        if any((edit, delete, export)) or print_done:
+            done_log()
+
+
+@cli.command()
+@click.option("-r", "--restore", is_flag=True)
+@click.option("-v", "--view", is_flag=True)
+@click.option("-d", "--delete", is_flag=True)
+@click.option("-s", "--sort-by", default="date_modified", type=click.Choice(["alphabetical", "date_created", "date_modified"]))
+@click.option("--asc/--desc", "order", default=True)
+def trash(restore, view, delete, sort_by, order):
+    from ..exceptions import NoNotesInDatabase
+    from ..logs import done_log
+    from ..logs.error import no_notes_in_trash_error
+    from .func import list_view
+    from ..notes import get_trash_notes
+
+    order = "ASC" if order else "DESC"
+
+    notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_trash_notes(sort_by, order))
+
+    try:
+        print_done = list_view(notes, True, restore=restore, view=view, delete2=delete)
+    except NoNotesInDatabase:
+        no_notes_in_trash_error()
+
+    if any((restore, view, delete)) or print_done:
+        done_log()
 
 
 @cli.command()
@@ -86,17 +119,17 @@ def view(note_id):
 @cli.command()
 @click.argument("note_id")
 def delete(note_id):
-    from .func import delete_note, note_id_command
+    from .func import trash_note, note_id_command
 
-    note_id_command(note_id, delete_note)
+    note_id_command(note_id, trash_note)
 
 
 @cli.command(name="del", help="Alias for delete")
 @click.argument("note_id")
 def del_command(note_id):
-    from .func import delete_note, note_id_command
+    from .func import trash_note, note_id_command
 
-    note_id_command(note_id, delete_note)
+    note_id_command(note_id, trash_note)
 
 
 # TODO: maybe add sorting
@@ -184,3 +217,27 @@ def changeeditor(new_editor):
         change_default_editor(new_editor)
     except ExecutableDoesNotExist:
         executable_does_not_exist_error(new_editor)
+
+
+@cli.command()
+def emptytrash():
+    from rich.console import Console
+    from rich.prompt import Confirm
+
+    from .func import empty_trash
+    from ..notes import get_all_notes
+    from ..logs import EmptyTrashNotes, done_log
+
+
+    logs = EmptyTrashNotes()
+    logs.next_log()
+
+    console = Console()
+
+    notes = "\n".join(f"\t[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes("alphabetical", "ASC"))
+
+    console.print(notes)
+
+    if Confirm.ask(logs.input_prompt):
+        empty_trash()
+        done_log()

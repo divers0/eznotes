@@ -59,6 +59,15 @@ class ExportNoteLogs(Log):
         self.input_prompt = "[bold blue]Where?[/bold blue]"
 
 
+class EmptyTrashNotes(Log):
+    def __init__(self):
+        super().__init__()
+
+        self.logs = ["[bold green]Your trash:"]
+
+        self.input_prompt = "[bold]Are you sure[/bold] you want to [bold red]permanently delete all notes in your trash[/bold red]?"
+
+
 class NoPromptSuffixPrompt(Prompt):
     prompt_suffix = " "
 

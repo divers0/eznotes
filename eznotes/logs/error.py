@@ -43,6 +43,13 @@ def no_notes_in_db_error():
     )
 
 
+def no_notes_in_trash_error():
+    _error_exit(
+        no_notes_in_trash_error_message,
+        0
+    )
+
+
 def file_not_found_error(path):
     _error_exit(file_not_found_error_message.format(path=path))
 

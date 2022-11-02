@@ -35,6 +35,13 @@
  - [x] make a general function for del, delete, view, add and edit for following the DRY code
  - [x] add .txt extension at the end of exported notes (and try to handle that the other way around (in the import function))
  - [x] in the deleting prompt mention the fact that the delete is permanent
- - [ ] add trash?
+ - [ ] add import from zip files (`eznotes export all` output)
+ - [x] add trash
+      - [x] add the column in database
+      - [x] make a function for restoring notes back to the db
+      - [x] add a fzf view for trash
+      - [x] add an empty trash command
+      - [x] permanently delete notes that have been trashed more than 30 days
+      - [x] export trash in `eznotes export all`
  - [ ] better `--help` output
  - [ ] add colors to the fzf (that opens the possibility to themes in the future?)

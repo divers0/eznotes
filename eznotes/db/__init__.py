@@ -14,12 +14,14 @@ def _make_id(note):
 def insert(row, note, date=None):
     conn, cur = get_conn_and_cur()
     note_id = _make_id(note)
-    row = [note_id, *row]
+    row = [note_id, *row, 0, None]
     if date:
-        row += [date, date]
-        cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?)", row)
+        # row += [date, date]
+        row.insert(3, date)
+        row.insert(3, date)
+        cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, ?, ?)", row)
     else:
-        cur.execute("INSERT INTO notes VALUES(?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'))", row)
+        cur.execute("INSERT INTO notes VALUES(?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?, ?)", row)
     conn.commit()
 
 
