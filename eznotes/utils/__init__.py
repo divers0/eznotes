@@ -21,10 +21,6 @@ def text_is_markdown(text):
     return False
 
 
-def add_new_title_to_text(note, new_title):
-    return "\n".join([new_title+"\n"]+note.split("\n"))
-
-
 def is_file_binary(file_path):
     with open(file_path, "rb") as f:
         file_bytes = f.read(1024)

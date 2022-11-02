@@ -1,5 +1,4 @@
-from os.path import expanduser, join, dirname
-
+from os.path import dirname, expanduser, join
 
 DEBUG = False
 

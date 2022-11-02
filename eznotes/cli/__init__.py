@@ -20,11 +20,11 @@ def cli(ctx, edit, view, delete, export, sort_by, order):
 
     conn.commit()
     if not ctx.invoked_subcommand:
+        from ..db.notes import get_all_notes
         from ..exceptions import NoNotesInDatabase
         from ..logs import done_log
         from ..logs.error import no_notes_in_db_error
         from .func import list_view
-        from ..notes import get_all_notes
 
         order = "ASC" if order else "DESC"
 
@@ -46,11 +46,11 @@ def cli(ctx, edit, view, delete, export, sort_by, order):
 @click.option("-s", "--sort-by", default="date_modified", type=click.Choice(["alphabetical", "date_created", "date_modified"]))
 @click.option("--asc/--desc", "order", default=True)
 def trash(restore, view, delete, sort_by, order):
+    from ..db.trash import get_trash_notes
     from ..exceptions import NoNotesInDatabase
     from ..logs import done_log
     from ..logs.error import no_notes_in_trash_error
     from .func import list_view
-    from ..notes import get_trash_notes
 
     order = "ASC" if order else "DESC"
 
@@ -78,7 +78,7 @@ def trash(restore, view, delete, sort_by, order):
 def add(title, body, finished, editor):
     from ..exceptions import NoteFileNotSaved
     from ..logs import done_log
-    from .func import new_note
+    from ..notes import new_note
 
     if title == "":
         title = None
@@ -103,40 +103,40 @@ def add(title, body, finished, editor):
 @click.argument("note_id")
 @click.option("--editor", default=get_default_editor(), show_default=True)
 def edit(note_id, editor):
-    from .func import edit_note, note_id_command
+    from .func import get_relevant_func, note_id_command
 
-    note_id_command(note_id, edit_note, editor)
+    note_id_command(note_id, get_relevant_func("edit"), editor)
 
 
 @cli.command()
 @click.argument("note_id")
 def view(note_id):
-    from .func import note_id_command, view_note
+    from .func import get_relevant_func, note_id_command
 
-    note_id_command(note_id, view_note)
+    note_id_command(note_id, get_relevant_func("view"))
 
 
 @cli.command()
 @click.argument("note_id")
 def delete(note_id):
-    from .func import trash_note, note_id_command
+    from .func import get_relevant_func, note_id_command
 
-    note_id_command(note_id, trash_note)
+    note_id_command(note_id, get_relevant_func("delete"))
 
 
 @cli.command(name="del", help="Alias for delete")
 @click.argument("note_id")
 def del_command(note_id):
-    from .func import trash_note, note_id_command
+    from .func import get_relevant_func, note_id_command
 
-    note_id_command(note_id, trash_note)
+    note_id_command(note_id, get_relevant_func("delete"))
 
 
 # TODO: maybe add sorting
 @cli.command(name="all")
 def all_command():
+    from ..db.notes import get_all_notes
     from ..logs import pager_view
-    from ..notes import get_all_notes
 
     notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes("alphabetical", "ASC"))
 
@@ -151,10 +151,11 @@ def import_command(filename, title, filename_as_title):
     import os
     from datetime import datetime
 
+    from ..db.notes import add_note_to_db
     from ..logs import done_log
     from ..logs.error import note_file_is_binary_error
-    from ..notes import add_note_to_db
-    from ..utils import add_new_title_to_text, is_file_binary
+    from ..utils import is_file_binary
+    from ..utils.notes import add_new_title_to_text
 
     # check if the file is a executable
     if is_file_binary(filename):
@@ -183,10 +184,10 @@ def import_command(filename, title, filename_as_title):
 def export(note_id, path):
     import os
 
+    from ..export import export_note
     from ..logs import done_log
     from ..logs.error import file_not_found_error
     from ..utils import is_path_writable
-    from .func import export_note
 
     if note_id == "all":
         from ..notes import export_notes_to_zip
@@ -224,8 +225,8 @@ def emptytrash():
     from rich.console import Console
     from rich.prompt import Confirm
 
-    from .func import empty_trash
-    from ..notes import get_all_notes
+    from ..db.notes import get_all_notes
+    from ..db.trash import empty_trash
     from ..logs import EmptyTrashNotes, done_log
 
 
