@@ -48,4 +48,4 @@
  - [ ] add the ability to turn the trash on or off
  - [x] move the VERSION const to the const.py, then add a '--version' flag
  - [ ] add a `search` command
- - [ ] refactor import
+ - [x] refactor import

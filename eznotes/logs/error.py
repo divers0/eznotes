@@ -28,10 +28,6 @@ def note_file_not_saved_error():
     _error_exit(note_file_not_saved_error_message)
 
 
-def note_file_is_binary_error():
-    _error_exit(note_file_is_binary_error_message)
-
-
 def program_runned_with_root_access_error():
     _error_exit(program_runned_with_root_access_error_message)
 

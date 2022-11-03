@@ -168,64 +168,29 @@ def all_command(category, sort_by, order):
 @click.option("-t", "--title")
 @click.option("--filename-as-title", is_flag=True)
 def import_command(filenames, title, filename_as_title):
-    import os
-    from datetime import datetime
-
     import magic
 
-    from ..db.notes import add_note_to_db
+    from ..import_note import import_from_zip, import_plain_text
     from ..logs import done_log
-    from ..logs.error import note_file_is_binary_error
+    from ..logs.error import error_print
+    from ..logs.messages import note_file_is_binary_error_message
     from ..utils import is_file_binary
-    from ..utils.notes import add_new_title_to_text
 
+
+    print_done = True
     for filename in filenames:
         if magic.from_file(filename, mime=True) == "application/zip":
-            import json
-            from zipfile import ZipFile
-
-            from ..db import get_conn_and_cur, make_id
-            from ..logs.error import unrecognized_zip_file_error
-
-            conn, cur = get_conn_and_cur()
-
-            with ZipFile(filename) as f:
-                try:
-                    database = json.loads(f.open("notes/notes.json").read())
-                except KeyError:
-                    unrecognized_zip_file_error(filename)
-
-                for note in database["notes"]:
-                    row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'])
-                    cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 0, NULL)", row)
-
-                for note in database["trash"]:
-                    row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'], note['trash_date'])
-                    cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 1, ?)", row)
-
-            conn.commit()
-
-            return done_log()
+            import_from_zip(filename)
 
         # check if the file is a executable
         elif is_file_binary(filename):
-            note_file_is_binary_error()
+            error_print(note_file_is_binary_error_message)
+            print_done = False
 
-        with open(filename) as f:
-            note_file = f.read()
-
-        last_modified_date = datetime.fromtimestamp(os.stat(filename)[-2]).strftime("%Y-%m-%d %H:%M:%S")
-
-        if title or filename_as_title:
-            if filename_as_title and filename.endswith(".txt"):
-                filename = os.path.splitext(filename)[0]
-            note_file = add_new_title_to_text(
-                note_file,
-                title if title else filename.replace("_", " ").replace("-", " ")
-            )
-
-        add_note_to_db(note_file, last_modified_date)
-    done_log()
+        else:
+            import_plain_text(title, filename_as_title, filename)
+    if print_done:
+        done_log()
 
 
 @cli.command()
