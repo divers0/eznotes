@@ -11,27 +11,28 @@ except FileExistsError:
     shutil.rmtree("build")
     os.mkdir("build")
 
-RELEASE_PATH = f"build/eznotes-{VERSION}.tar.gz"
+os.chdir("build")
+
+THIS_VERSION_NAME = f"eznotes-{VERSION}"
+RELEASE_PATH = f"{THIS_VERSION_NAME}.tar.gz"
 FILES_TO_ADD = ["LICENSE", "README.md", "setup.py"]
 
-os.mkdir("tar")
-os.system("cp -r eznotes tar")
+os.mkdir(THIS_VERSION_NAME)
+os.system(f"cp -r ../eznotes {THIS_VERSION_NAME}")
 
-with open("tar/eznotes/const.py") as f:
+for file in FILES_TO_ADD:
+    os.system(f"cp ../{file} {THIS_VERSION_NAME}")
+
+with open(f"{THIS_VERSION_NAME}/eznotes/const.py") as f:
     const_file = f.read()
 
 # Turning debug mode off
-with open("tar/eznotes/const.py", "w") as f:
+with open(f"{THIS_VERSION_NAME}/eznotes/const.py", "w") as f:
     f.write(const_file.replace("DEBUG = True", "DEBUG = False"))
 
 
 with tarfile.open(RELEASE_PATH, "w:gz") as tar:
-    for filename in FILES_TO_ADD:
-        tar.add(filename)
-    # Adding the changed eznotes dir
-    os.chdir("tar")
-    tar.add("eznotes")
+    tar.add(THIS_VERSION_NAME)
 
 # cleaning up
-os.chdir("..")
-shutil.rmtree("tar")
+shutil.rmtree(THIS_VERSION_NAME)
