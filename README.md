@@ -6,9 +6,9 @@ read and write notes inside of your terminal
 **DISCLAIMER: This program has been designed to work on linux. no support is provided to any user on any other OS**
 ## Requirements
  - python
- - fzf
+ - [fzf](https://github.com/junegunn/fzf)
 
-other than the python packages, this program only uses [fzf](https://github.com/junegunn/fzf).
+
 1. install fzf
 2. after installing fzf you can simply download the the latest release from the [releases page](https://github.com/divers0/eznotes/releases/latest)
 3. after downloading the release, run the following commands
