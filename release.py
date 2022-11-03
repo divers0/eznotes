@@ -5,7 +5,13 @@ import tarfile
 from eznotes.const import VERSION
 
 
-RELEASE_NAME = f"eznotes-{VERSION}.tar.gz"
+try:
+    os.mkdir("build")
+except FileExistsError:
+    shutil.rmtree("build")
+    os.mkdir("build")
+
+RELEASE_PATH = f"build/eznotes-{VERSION}.tar.gz"
 FILES_TO_ADD = ["LICENSE", "README.md", "setup.py"]
 
 os.mkdir("tar")
@@ -19,7 +25,7 @@ with open("tar/eznotes/const.py", "w") as f:
     f.write(const_file.replace("DEBUG = True", "DEBUG = False"))
 
 
-with tarfile.open(RELEASE_NAME, "w:gz") as tar:
+with tarfile.open(RELEASE_PATH, "w:gz") as tar:
     for filename in FILES_TO_ADD:
         tar.add(filename)
     # Adding the changed eznotes dir
