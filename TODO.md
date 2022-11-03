@@ -47,4 +47,4 @@
  - [ ] add colors to the fzf (that opens the possibility to themes in the future?)
  - [ ] add a note by default to the db
  - [ ] add the ability to turn the trash on or off
- - [ ] move the VERSION const to the const.py, then add a '--version' flag
+ - [x] move the VERSION const to the const.py, then add a '--version' flag

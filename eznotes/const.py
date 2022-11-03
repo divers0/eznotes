@@ -1,5 +1,7 @@
 from os.path import dirname, expanduser, join
 
+VERSION = "0.7.5"
+
 DEBUG = True
 
 CONFIG_FOLDER_PATH = join(expanduser("~"), ".config", "eznotes")

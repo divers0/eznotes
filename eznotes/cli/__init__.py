@@ -11,8 +11,13 @@ from ..default_editor import get_default_editor
 @click.option("-x", "--export", is_flag=True)
 @click.option("-s", "--sort-by", default="date_modified", type=click.Choice(["alphabetical", "date_created", "date_modified"]))
 @click.option("--asc/--desc", "order", default=True)
+@click.option("--version", is_flag=True)
 @click.pass_context
-def cli(ctx, edit, view, delete, export, sort_by, order):
+def cli(ctx, edit, view, delete, export, sort_by, order, version):
+    if version:
+        from ..const import VERSION
+        return print(VERSION)
+
     conn, cur = get_conn_and_cur()
 
     # Deleting notes that have been in the trash for 30 days or more
