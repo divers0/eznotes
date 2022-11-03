@@ -154,10 +154,10 @@ def all_command():
 
 
 @cli.command(name="import")
-@click.argument("filename", type=click.Path(exists=True, dir_okay=False))
+@click.argument("filenames", type=click.Path(exists=True, dir_okay=False), nargs=-1)
 @click.option("-t", "--title")
 @click.option("--filename-as-title", is_flag=True)
-def import_command(filename, title, filename_as_title):
+def import_command(filenames, title, filename_as_title):
     import os
     from datetime import datetime
 
@@ -169,51 +169,52 @@ def import_command(filename, title, filename_as_title):
     from ..utils import is_file_binary
     from ..utils.notes import add_new_title_to_text
 
-    if magic.from_file(filename, mime=True) == "application/zip":
-        import json
-        from zipfile import ZipFile
+    for filename in filenames:
+        if magic.from_file(filename, mime=True) == "application/zip":
+            import json
+            from zipfile import ZipFile
 
-        from ..db import get_conn_and_cur, make_id
-        from ..logs.error import unrecognized_zip_file_error
+            from ..db import get_conn_and_cur, make_id
+            from ..logs.error import unrecognized_zip_file_error
 
-        conn, cur = get_conn_and_cur()
+            conn, cur = get_conn_and_cur()
 
-        with ZipFile(filename) as f:
-            try:
-                database = json.loads(f.open("notes/notes.json").read())
-            except KeyError:
-                unrecognized_zip_file_error(filename)
+            with ZipFile(filename) as f:
+                try:
+                    database = json.loads(f.open("notes/notes.json").read())
+                except KeyError:
+                    unrecognized_zip_file_error(filename)
 
-            for note in database["notes"]:
-                row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'])
-                cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 0, NULL)", row)
+                for note in database["notes"]:
+                    row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'])
+                    cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 0, NULL)", row)
 
-            for note in database["trash"]:
-                row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'], note['trash_date'])
-                cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 1, ?)", row)
+                for note in database["trash"]:
+                    row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'], note['trash_date'])
+                    cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 1, ?)", row)
 
-        conn.commit()
+            conn.commit()
 
-        return done_log()
+            return done_log()
 
-    # check if the file is a executable
-    elif is_file_binary(filename):
-        note_file_is_binary_error()
+        # check if the file is a executable
+        elif is_file_binary(filename):
+            note_file_is_binary_error()
 
-    with open(filename) as f:
-        note_file = f.read()
+        with open(filename) as f:
+            note_file = f.read()
 
-    last_modified_date = datetime.fromtimestamp(os.stat(filename)[-2]).strftime("%Y-%m-%d %H:%M:%S")
+        last_modified_date = datetime.fromtimestamp(os.stat(filename)[-2]).strftime("%Y-%m-%d %H:%M:%S")
 
-    if title or filename_as_title:
-        if filename_as_title and filename.endswith(".txt"):
-            filename = os.path.splitext(filename)[0]
-        note_file = add_new_title_to_text(
-            note_file,
-            title if title else filename.replace("_", " ").replace("-", " ")
-        )
+        if title or filename_as_title:
+            if filename_as_title and filename.endswith(".txt"):
+                filename = os.path.splitext(filename)[0]
+            note_file = add_new_title_to_text(
+                note_file,
+                title if title else filename.replace("_", " ").replace("-", " ")
+            )
 
-    add_note_to_db(note_file, last_modified_date)
+        add_note_to_db(note_file, last_modified_date)
     done_log()
 
 

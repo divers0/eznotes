@@ -4,6 +4,22 @@ VERSION = "0.7.5"
 
 DEBUG = True
 
+
+FIRST_NOTE_TEXT = """# welcome the eznotes
+## hi there!
+
+you can try some of the features on this note (keep delete for the last one)
+
+# What is this?
+
+this is a simple app for taking notes inside of your command line with your favorite editors!
+
+the goal of this program is to be a simple note taking app that whenever you have anything
+(text based obviously) you can easily store.
+"""
+
+
+
 CONFIG_FOLDER_PATH = join(expanduser("~"), ".config", "eznotes")
 
 if DEBUG:

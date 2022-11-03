@@ -29,7 +29,7 @@ def note_exists(note_id):
 def add_note_to_db(text, date=None):
     title, body = get_title_and_body(text)
 
-    insert((title, body), text, date)
+    insert((title, body), date)
 
 
 def get_note_title(note_id):

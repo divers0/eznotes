@@ -1,7 +1,8 @@
 import os
 
-from ..const import CONFIG_FOLDER_PATH, DATABASE_PATH
-from . import get_conn_and_cur
+from ..const import CONFIG_FOLDER_PATH, DATABASE_PATH, FIRST_NOTE_TEXT
+from ..utils.notes import get_title_and_body
+from . import get_conn_and_cur, insert
 
 
 def db_initiate():
@@ -30,4 +31,5 @@ def db_initiate():
                     trash_date TEXT);"""
     )
 
+    insert(get_title_and_body(FIRST_NOTE_TEXT))
     conn.commit()

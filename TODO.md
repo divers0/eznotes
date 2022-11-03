@@ -27,7 +27,6 @@
  - [x] add a list command which **prints** out all the notes.
  - [x] add the option to sort the fzf list
  - [x] when exporting a single note, change the file date to the notes date (fix its metadata)
- - [ ] (A BIG MAYBE) add an "add" element to the fzf list and whenever the user selected that just open an empty buffer in their default editor.
  - [x] make a wrapper for view
  - [x] make `del` an alias for `delete`
  - [x] when adding a note from a file extract the files date created and date modified and use those valued in the database
@@ -45,6 +44,8 @@
       - [x] export trash in `eznotes export all`
  - [ ] better `--help` output
  - [ ] add colors to the fzf (that opens the possibility to themes in the future?)
- - [ ] add a note by default to the db
+ - [x] add a note by default to the db
  - [ ] add the ability to turn the trash on or off
  - [x] move the VERSION const to the const.py, then add a '--version' flag
+ - [ ] add a `search` command
+ - [ ] refactor import

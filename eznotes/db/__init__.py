@@ -11,10 +11,14 @@ def make_id(note):
     return note_id
 
 
-def insert(row, note, date=None):
+def insert(row, date=None):
     conn, cur = get_conn_and_cur()
+
+    note = f"{row[0]}\n{row[1]}"
     note_id = make_id(note)
+
     row = [note_id, *row, 0, None]
+
     if date:
         row.insert(3, date)
         row.insert(3, date)
