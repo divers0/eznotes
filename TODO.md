@@ -3,7 +3,7 @@
  - [x] make a wrapper for edit_note
  - [x] Better logs and errors
  - [x] add del
- - [ ] update README.md
+ - [x] update README.md
  - [x] ability to add notes from files
  - [x] ability to export one note
  - [x] ability to export all of the notes
