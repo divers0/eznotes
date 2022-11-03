@@ -15,3 +15,5 @@ no_notes_in_trash_error_message = "Currently there are no notes in the trash."
 file_not_found_error_message = "The Path [green]'{path}'[/green] does not exist."
 
 finished_without_text_error_message = "You have to first enter the note to be finished with it."
+
+unrecognized_zip_file_error_message = "contents of [green]'{filename}'[/green] are not valid."

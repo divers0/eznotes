@@ -56,3 +56,7 @@ def file_not_found_error(path):
 
 def finished_without_text_error():
     _error_exit(finished_without_text_error_message)
+
+
+def unrecognized_zip_file_error(filename):
+    _error_exit(unrecognized_zip_file_error_message.format(filename=filename))

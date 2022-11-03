@@ -151,14 +151,43 @@ def import_command(filename, title, filename_as_title):
     import os
     from datetime import datetime
 
+    import magic
+
     from ..db.notes import add_note_to_db
     from ..logs import done_log
     from ..logs.error import note_file_is_binary_error
     from ..utils import is_file_binary
     from ..utils.notes import add_new_title_to_text
 
+    if magic.from_file(filename, mime=True) == "application/zip":
+        import json
+        from zipfile import ZipFile
+
+        from ..db import get_conn_and_cur, make_id
+        from ..logs.error import unrecognized_zip_file_error
+
+        conn, cur = get_conn_and_cur()
+
+        with ZipFile(filename) as f:
+            try:
+                database = json.loads(f.open("notes/notes.json").read())
+            except KeyError:
+                unrecognized_zip_file_error(filename)
+
+            for note in database["notes"]:
+                row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'])
+                cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 0, NULL)", row)
+
+            for note in database["trash"]:
+                row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'], note['trash_date'])
+                cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 1, ?)", row)
+
+        conn.commit()
+
+        return done_log()
+
     # check if the file is a executable
-    if is_file_binary(filename):
+    elif is_file_binary(filename):
         note_file_is_binary_error()
 
     with open(filename) as f:
@@ -190,14 +219,14 @@ def export(note_id, path):
     from ..utils import is_path_writable
 
     if note_id == "all":
-        from ..notes import export_notes_to_zip
+        from ..export import export_notes_to_zip
 
         if os.path.isdir(path):
             path = os.path.join(path, "notes")
 
         export_notes_to_zip(path)
 
-        return
+        return done_log()
 
     if is_path_writable(path) or os.path.isdir(path):
         export_note(note_id, path)
@@ -225,8 +254,7 @@ def emptytrash():
     from rich.console import Console
     from rich.prompt import Confirm
 
-    from ..db.notes import get_all_notes
-    from ..db.trash import empty_trash
+    from ..db.trash import empty_trash, get_trash_notes
     from ..logs import EmptyTrashNotes, done_log
 
 
@@ -235,7 +263,7 @@ def emptytrash():
 
     console = Console()
 
-    notes = "\n".join(f"\t[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes("alphabetical", "ASC"))
+    notes = "\n".join(f"\t[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_trash_notes("alphabetical", "ASC"))
 
     console.print(notes)
 
