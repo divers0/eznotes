@@ -40,3 +40,11 @@ def is_path_writable(path):
     except (FileNotFoundError, IsADirectoryError, PermissionError):
         return False
     return True
+
+
+def find_default_editor_executable():
+    editors = ("nano", "vim", "emacs")
+    for editor in editors:
+        if executable_exists(editor):
+            return editor
+    return None

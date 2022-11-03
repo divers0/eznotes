@@ -101,3 +101,19 @@ def export_note_prompt(note_id):
             return entered_path
         else:
             error_print(file_not_found_error_message.format(path=entered_path))
+
+
+def default_editor_prompt(input_prompt):
+    from rich.prompt import Prompt
+
+    from .utils import executable_exists, find_default_editor_executable
+
+    editor_exists = False
+    while not editor_exists:
+        new_editor = Prompt.ask(
+            input_prompt,
+            default=find_default_editor_executable()
+        )
+        editor_exists = executable_exists(new_editor)
+
+    return new_editor
