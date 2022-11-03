@@ -50,4 +50,4 @@ TRASH_VALID_INPUTS = {
     "restore": ("3", "restore", "r"),
 }
 
-FZF_SORTING_OPTIONS = ["alphabet", "created", "modified"]
+SORTING_OPTIONS = ["alphabet", "created", "modified"]

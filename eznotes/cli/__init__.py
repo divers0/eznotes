@@ -1,6 +1,6 @@
 import click
 
-from ..const import FZF_SORTING_OPTIONS
+from ..const import SORTING_OPTIONS
 from ..db import get_conn_and_cur
 from ..default_editor import get_default_editor
 
@@ -10,7 +10,7 @@ from ..default_editor import get_default_editor
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
 @click.option("-x", "--export", is_flag=True)
-@click.option("-s", "--sort-by", default="modified", type=click.Choice(FZF_SORTING_OPTIONS))
+@click.option("-s", "--sort-by", default="modified", type=click.Choice(SORTING_OPTIONS))
 @click.option("--asc/--desc", "order", default=True)
 @click.option("--version", is_flag=True)
 @click.pass_context
@@ -51,7 +51,7 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
 @click.option("-r", "--restore", is_flag=True)
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
-@click.option("-s", "--sort-by", default="modified", type=click.Choice(FZF_SORTING_OPTIONS))
+@click.option("-s", "--sort-by", default="modified", type=click.Choice(SORTING_OPTIONS))
 @click.option("--asc/--desc", "order", default=True)
 def trash(restore, view, delete, sort_by, order):
     from ..db.trash import get_trash_notes
@@ -142,13 +142,23 @@ def del_command(note_id):
     note_id_command(note_id, get_relevant_func("delete"))
 
 
-# TODO: maybe add sorting
 @cli.command(name="all")
-def all_command():
-    from ..db.notes import get_all_notes
+@click.argument("category", default="notes", type=click.Choice(["notes", "trash"]))
+@click.option("-s", "--sort-by", default="alphabet", type=click.Choice(SORTING_OPTIONS))
+@click.option("--asc/--desc", "order", default=True)
+def all_command(category, sort_by, order):
     from ..logs import pager_view
+    from ..utils.notes import fix_sort_by_name
 
-    notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_notes("alphabetical", "ASC"))
+    if category == "notes":
+        from ..db.notes import get_all_notes as get_all_func
+    else:
+        from ..db.trash import get_trash_notes as get_all_func
+
+    order = "ASC" if order else "DESC"
+    sort_by = fix_sort_by_name(sort_by)
+
+    notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_func(sort_by, order))
 
     pager_view(notes)
 
