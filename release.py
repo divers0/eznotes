@@ -4,7 +4,6 @@ import tarfile
 
 from eznotes.const import VERSION
 
-
 try:
     os.mkdir("build")
 except FileExistsError:

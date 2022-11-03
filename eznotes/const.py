@@ -33,3 +33,5 @@ TRASH_VALID_INPUTS = {
     "view": ("2", "view", "v"),
     "restore": ("3", "restore", "r"),
 }
+
+FZF_SORTING_OPTIONS = ["alphabet", "created", "modified"]

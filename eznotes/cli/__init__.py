@@ -1,5 +1,6 @@
 import click
 
+from ..const import FZF_SORTING_OPTIONS
 from ..db import get_conn_and_cur
 from ..default_editor import get_default_editor
 
@@ -9,7 +10,7 @@ from ..default_editor import get_default_editor
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
 @click.option("-x", "--export", is_flag=True)
-@click.option("-s", "--sort-by", default="date_modified", type=click.Choice(["alphabetical", "date_created", "date_modified"]))
+@click.option("-s", "--sort-by", default="modified", type=click.Choice(FZF_SORTING_OPTIONS))
 @click.option("--asc/--desc", "order", default=True)
 @click.option("--version", is_flag=True)
 @click.pass_context
@@ -29,14 +30,16 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
         from ..exceptions import NoNotesInDatabase
         from ..logs import done_log
         from ..logs.error import no_notes_in_db_error
+        from ..utils.notes import fix_sort_by_name
         from .func import list_view
 
         order = "ASC" if order else "DESC"
+        sort_by = fix_sort_by_name(sort_by)
 
         notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_all_notes(sort_by, order))
+
         try:
             print_done = list_view(notes, False, edit=edit, view=view, delete=delete, export=export)
-
         except NoNotesInDatabase:
             no_notes_in_db_error()
 
@@ -48,16 +51,18 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
 @click.option("-r", "--restore", is_flag=True)
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
-@click.option("-s", "--sort-by", default="date_modified", type=click.Choice(["alphabetical", "date_created", "date_modified"]))
+@click.option("-s", "--sort-by", default="modified", type=click.Choice(FZF_SORTING_OPTIONS))
 @click.option("--asc/--desc", "order", default=True)
 def trash(restore, view, delete, sort_by, order):
     from ..db.trash import get_trash_notes
     from ..exceptions import NoNotesInDatabase
     from ..logs import done_log
     from ..logs.error import no_notes_in_trash_error
+    from ..utils.notes import fix_sort_by_name
     from .func import list_view
 
     order = "ASC" if order else "DESC"
+    sort_by = fix_sort_by_name(sort_by)
 
     notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_trash_notes(sort_by, order))
 

@@ -1,6 +1,6 @@
-from eznotes.const import VERSION
 from setuptools import find_packages, setup
 
+from eznotes.const import VERSION
 
 setup(
     name="eznotes",
