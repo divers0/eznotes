@@ -49,3 +49,4 @@
  - [x] move the VERSION const to the const.py, then add a '--version' flag
  - [ ] add a `search` command
  - [x] refactor import
+ - [ ] merge the title and body columns (idk why i decided that they would be two separate things in the first place)

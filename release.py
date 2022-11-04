@@ -4,6 +4,17 @@ import tarfile
 
 from eznotes.const import VERSION
 
+
+def remove_pycache(path, ignore=[], paths=[]):
+    contents = [os.path.join(path, x) for x in os.listdir(path)]
+    for content in contents:
+        if os.path.isdir(content) and os.path.basename(content) == "__pycache__":
+            shutil.rmtree(content)
+        elif os.path.isdir(content) and content not in ignore:
+            remove_pycache(content, paths)
+        paths.append(content)
+
+
 try:
     os.mkdir("build")
 except FileExistsError:
@@ -28,6 +39,9 @@ with open(f"{THIS_VERSION_NAME}/eznotes/const.py") as f:
 # Turning debug mode off
 with open(f"{THIS_VERSION_NAME}/eznotes/const.py", "w") as f:
     f.write(const_file.replace("DEBUG = True", "DEBUG = False"))
+
+
+remove_pycache(os.path.join(THIS_VERSION_NAME, "eznotes"))
 
 
 with tarfile.open(RELEASE_PATH, "w:gz") as tar:

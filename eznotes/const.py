@@ -1,9 +1,9 @@
 from os.path import dirname, expanduser, join
 
+
 VERSION = "0.7.5"
 
 DEBUG = True
-
 
 FIRST_NOTE_TEXT = """# welcome the eznotes
 ## hi there!
@@ -17,8 +17,6 @@ this is a simple app for taking notes inside of your command line with your favo
 the goal of this program is to be a simple note taking app that whenever you have anything
 (text based obviously) you can easily store.
 """
-
-
 
 CONFIG_FOLDER_PATH = join(expanduser("~"), ".config", "eznotes")
 
