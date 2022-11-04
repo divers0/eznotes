@@ -6,3 +6,9 @@ class ExecutableDoesNotExist(Exception):
 
 class NoNotesInDatabase(Exception):
     ...
+
+class ConfigFileDoesNotExist(Exception):
+    ...
+
+class TrashIsAlreadyEmpty(Exception):
+    ...

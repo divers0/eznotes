@@ -1,5 +1,4 @@
 from rich.console import Console
-from rich.prompt import Prompt
 
 from ..utils import text_is_markdown
 
@@ -59,7 +58,7 @@ class ExportNoteLogs(Log):
         self.input_prompt = "[bold blue]Where?[/bold blue]"
 
 
-class EmptyTrashNotes(Log):
+class EmptyTrashLogs(Log):
     def __init__(self):
         super().__init__()
 
@@ -68,8 +67,16 @@ class EmptyTrashNotes(Log):
         self.input_prompt = "[bold]Are you sure[/bold] you want to [bold red]permanently delete all notes in your trash[/bold red]?"
 
 
-class NoPromptSuffixPrompt(Prompt):
-    prompt_suffix = " "
+class TurnTrashOffLogs(Log):
+    def __init__(self):
+        super().__init__()
+
+        self.logs = [
+            "Your [bold]trash[/bold] is [bold]not empty[/bold] and you are "
+            "trying to turn it [bold red]off[/bold red]"
+            "\nYou have to [bold]empty[/bold] your [bold]trash[/bold] "
+            "in order to continue:\n"
+        ]
 
 
 def done_log():

@@ -65,12 +65,13 @@ again just like above there are two ways of approaching this actions
 
 ### Emptying your trash
 ```
-eznotes emptytrash
+eznotes trash empty
 ```
 
-for now that's it for the trash.
-in the future there might be a feature for being able to turning it off.
-but for now there isn't.
+### Turning trash on/off
+```
+eznotes trash [on/off]
+```
 
 ## Exporting all of your notes
 the explanation for exporting only one note was mentioned above.\

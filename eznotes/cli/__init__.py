@@ -1,8 +1,8 @@
 import click
 
+from ..config.editor import get_default_editor
 from ..const import SORTING_OPTIONS
-from ..db import get_conn_and_cur
-from ..default_editor import get_default_editor
+from ..trash import trash_is_on
 
 
 @click.group(invoke_without_command=True)
@@ -19,12 +19,16 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
         from ..const import VERSION
         return print(VERSION)
 
-    conn, cur = get_conn_and_cur()
+    if trash_is_on():
+        from ..db import get_conn_and_cur
 
-    # Deleting notes that have been in the trash for 30 days or more
-    cur.execute("DELETE FROM notes WHERE trash_date <= datetime('now','-30 day')")
+        conn, cur = get_conn_and_cur()
 
-    conn.commit()
+        # Deleting notes that have been in the trash for 30 days or more
+        cur.execute("DELETE FROM notes WHERE trash_date <= datetime('now','-30 day')")
+
+        conn.commit()
+
     if not ctx.invoked_subcommand:
         from ..db.notes import get_all_notes
         from ..exceptions import NoNotesInDatabase
@@ -48,18 +52,37 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
 
 
 @cli.command()
+@click.argument("command", default="", type=click.Choice(["empty", "on", "off", ""]))
 @click.option("-r", "--restore", is_flag=True)
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
 @click.option("-s", "--sort-by", default="modified", type=click.Choice(SORTING_OPTIONS))
 @click.option("--asc/--desc", "order", default=True)
-def trash(restore, view, delete, sort_by, order):
+def trash(command, restore, view, delete, sort_by, order):
     from ..db.trash import get_trash_notes
-    from ..exceptions import NoNotesInDatabase
+    from ..exceptions import NoNotesInDatabase, TrashIsAlreadyEmpty
     from ..logs import done_log
-    from ..logs.error import no_notes_in_trash_error
+    from ..logs.error import (no_notes_in_trash_error,
+                              trash_is_already_empty_error,
+                              trash_is_turned_off_error)
+    from ..trash import trash_is_on
     from ..utils.notes import fix_sort_by_name
     from .func import list_view
+
+    if command == "empty":
+        from ..trash import empty_trash
+
+        try:
+            empty_trash()
+        except TrashIsAlreadyEmpty:
+            trash_is_already_empty_error()
+        return
+    elif command in ["on", "off"]:
+        from ..trash import turn_trash
+        return turn_trash(command)
+
+    if not trash_is_on():
+        trash_is_turned_off_error()
 
     order = "ASC" if order else "DESC"
     sort_by = fix_sort_by_name(sort_by)
@@ -225,7 +248,7 @@ def export(note_id, path):
 @cli.command()
 @click.argument("new_editor")
 def changeeditor(new_editor):
-    from ..default_editor import change_default_editor
+    from ..config.editor import change_default_editor
     from ..exceptions import ExecutableDoesNotExist
     from ..logs.error import executable_does_not_exist_error
 
@@ -234,25 +257,3 @@ def changeeditor(new_editor):
     except ExecutableDoesNotExist:
         executable_does_not_exist_error(new_editor)
 
-
-@cli.command()
-def emptytrash():
-    from rich.console import Console
-    from rich.prompt import Confirm
-
-    from ..db.trash import empty_trash, get_trash_notes
-    from ..logs import EmptyTrashNotes, done_log
-
-
-    logs = EmptyTrashNotes()
-    logs.next_log()
-
-    console = Console()
-
-    notes = "\n".join(f"\t[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_trash_notes("alphabetical", "ASC"))
-
-    console.print(notes)
-
-    if Confirm.ask(logs.input_prompt):
-        empty_trash()
-        done_log()

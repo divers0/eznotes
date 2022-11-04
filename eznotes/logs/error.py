@@ -56,3 +56,11 @@ def finished_without_text_error():
 
 def unrecognized_zip_file_error(filename):
     _error_exit(unrecognized_zip_file_error_message.format(filename=filename))
+
+
+def trash_is_turned_off_error():
+    _error_exit(trash_is_turned_off_error_message, 0)
+
+
+def trash_is_already_empty_error():
+    _error_exit(trash_is_already_empty_error_message, 0)

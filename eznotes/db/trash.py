@@ -32,3 +32,9 @@ def get_trash_notes(sort_by, order):
         sort_by = "title"
     cur.execute(f"SELECT * FROM notes WHERE added_to_trash = 1 ORDER BY {sort_by} {order}")
     return cur.fetchall()
+
+
+def trash_is_empty():
+    cur = get_conn_and_cur()[1]
+    cur.execute("SELECT * FROM notes WHERE added_to_trash = 1")
+    return not any(1 for _ in cur.fetchall())

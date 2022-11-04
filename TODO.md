@@ -45,8 +45,12 @@
  - [ ] better `--help` output
  - [ ] add colors to the fzf (that opens the possibility to themes in the future?)
  - [x] add a note by default to the db
- - [ ] add the ability to turn the trash on or off
+ - [x] add the ability to turn the trash on or off
  - [x] move the VERSION const to the const.py, then add a '--version' flag
  - [ ] add a `search` command
  - [x] refactor import
  - [ ] merge the title and body columns (idk why i decided that they would be two separate things in the first place)
+ - [ ] clean
+      - [ ] in logs, make self.logs tuples not lists
+      - [ ] try to prevent any line to be more than 80 characters (there are some in logs)
+      - [ ] clean const.py

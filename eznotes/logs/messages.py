@@ -17,3 +17,7 @@ file_not_found_error_message = "The Path [green]'{path}'[/green] does not exist.
 finished_without_text_error_message = "You have to first enter the note to be finished with it."
 
 unrecognized_zip_file_error_message = "contents of [green]'{filename}'[/green] are not valid."
+
+trash_is_turned_off_error_message = "Trash is turned off. run [bold italic]eznotes trash on[/bold italic] to turn it back on."
+
+trash_is_already_empty_error_message = "Trash is already empty."

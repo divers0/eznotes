@@ -5,9 +5,9 @@ import sys
 
 from rich.console import Console
 
-from .const import DATABASE_PATH
+from .config import config_file_initiate, config_file_valid
+from .const import CONFIG_FOLDER_PATH, DATABASE_PATH
 from .db.init import db_initiate
-from .default_editor import editor_file_exists, editor_initiate
 from .logs.error import program_runned_with_root_access_error
 
 
@@ -22,9 +22,12 @@ console = Console()
 
 
 def check_for_initiation():
-    if os.path.exists(DATABASE_PATH) and editor_file_exists():
-        return True
-    return False
+    if not os.path.exists(CONFIG_FOLDER_PATH):
+        os.mkdir(CONFIG_FOLDER_PATH)
+    if not os.path.exists(DATABASE_PATH):
+        db_initiate()
+    if not config_file_valid():
+        config_file_initiate()
 
 
 def check_for_root():
@@ -35,14 +38,7 @@ def check_for_root():
 
 def main():
     check_for_root()
-    if not check_for_initiation():
-        from .logs import done_log
-
-        db_initiate()
-        editor_initiate()
-
-        done_log()
-        return
+    check_for_initiation()
     # it has to be here
     from .cli import cli
 

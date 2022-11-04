@@ -1,9 +1,16 @@
+from rich.prompt import Prompt
+
+
+class NoPromptSuffixPrompt(Prompt):
+    prompt_suffix = " "
+
+
 def notes_prompt(note_id):
+    from .config.editor import get_default_editor
     from .const import NOTES_VALID_INPUTS
     from .db.trash import trash_note
-    from .default_editor import get_default_editor
     from .export import export_note
-    from .logs import ListViewLogs, NoPromptSuffixPrompt, selected_note_log
+    from .logs import ListViewLogs, selected_note_log
     from .notes import edit_note, view_note
     from .utils import flatten
 
@@ -50,7 +57,7 @@ def notes_prompt(note_id):
 def trash_prompt(note_id):
     from .const import TRASH_VALID_INPUTS
     from .db.trash import restore_note
-    from .logs import ListViewLogs, NoPromptSuffixPrompt, selected_note_log
+    from .logs import ListViewLogs, selected_note_log
     from .notes import delete_note, view_note
     from .utils import flatten
 
@@ -84,7 +91,7 @@ def export_note_prompt(note_id):
     import os
 
     from .db.notes import get_note_title
-    from .logs import ExportNoteLogs, NoPromptSuffixPrompt
+    from .logs import ExportNoteLogs
     from .logs.error import error_print
     from .logs.messages import file_not_found_error_message
     from .utils import is_path_writable

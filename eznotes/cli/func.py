@@ -18,11 +18,12 @@ def get_relevant_func(name):
     from ..db.trash import restore_note, trash_note
     from ..export import export_note
     from ..notes import delete_note, edit_note, view_note
+    from ..trash import trash_is_on
 
     func_names = {
         "edit": edit_note,
         "view": view_note,
-        "delete": trash_note,
+        "delete": trash_note if trash_is_on() else delete_note,
         "export": export_note,
         "restore": restore_note,
         "delete2": delete_note,
@@ -37,7 +38,7 @@ def run_relevant_func(note_id=None, **args):
 
     func = [(name, get_relevant_func(name)) for name, true in zip(args.keys(), args.values()) if true][0]
     if func[0] == "edit":
-        from ..default_editor import get_default_editor
+        from ..config.editor import get_default_editor
 
         editor = get_default_editor()
         edit_note(note_id, editor)
