@@ -10,7 +10,10 @@ from ..trash import trash_is_on
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
 @click.option("-x", "--export", is_flag=True)
-@click.option("-s", "--sort-by", default="modified", type=click.Choice(SORTING_OPTIONS))
+@click.option(
+    "-s", "--sort-by", default="modified",
+    type=click.Choice(SORTING_OPTIONS)
+)
 @click.option("--asc/--desc", "order", default=True)
 @click.option("--version", is_flag=True)
 @click.pass_context
@@ -25,7 +28,9 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
         conn, cur = get_conn_and_cur()
 
         # Deleting notes that have been in the trash for 30 days or more
-        cur.execute("DELETE FROM notes WHERE trash_date <= datetime('now','-30 day')")
+        cur.execute(
+            "DELETE FROM notes WHERE trash_date <= datetime('now','-30 day')"
+        )
 
         conn.commit()
 
@@ -40,10 +45,20 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
         order = "ASC" if order else "DESC"
         sort_by = fix_sort_by_name(sort_by)
 
-        notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_all_notes(sort_by, order))
+        notes = "\n".join(
+            f"{x[0][:8]} - {x[1]}"
+            for x in get_all_notes(sort_by, order)
+        )
 
         try:
-            print_done = list_view(notes, False, edit=edit, view=view, delete=delete, export=export)
+            print_done = list_view(
+                notes,
+                False,
+                edit=edit,
+                view=view,
+                delete=delete,
+                export=export
+            )
         except NoNotesInDatabase:
             no_notes_in_db_error()
 
@@ -52,11 +67,20 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
 
 
 @cli.command()
-@click.argument("command", default="", type=click.Choice(["empty", "on", "off", ""]))
+@click.argument(
+    "command",
+    default="",
+    type=click.Choice(["empty", "on", "off", ""])
+)
 @click.option("-r", "--restore", is_flag=True)
 @click.option("-v", "--view", is_flag=True)
 @click.option("-d", "--delete", is_flag=True)
-@click.option("-s", "--sort-by", default="modified", type=click.Choice(SORTING_OPTIONS))
+@click.option(
+    "-s",
+    "--sort-by",
+    default="modified",
+    type=click.Choice(SORTING_OPTIONS)
+)
 @click.option("--asc/--desc", "order", default=True)
 def trash(command, restore, view, delete, sort_by, order):
     from ..db.trash import get_trash_notes
@@ -87,10 +111,19 @@ def trash(command, restore, view, delete, sort_by, order):
     order = "ASC" if order else "DESC"
     sort_by = fix_sort_by_name(sort_by)
 
-    notes = "\n".join(f"{x[0][:8]} - {x[1]}" for x in get_trash_notes(sort_by, order))
+    notes = "\n".join(
+        f"{x[0][:8]} - {x[1]}"
+        for x in get_trash_notes(sort_by, order)
+    )
 
     try:
-        print_done = list_view(notes, True, restore=restore, view=view, delete2=delete)
+        print_done = list_view(
+            notes,
+            True,
+            restore=restore,
+            view=view,
+            delete2=delete
+        )
     except NoNotesInDatabase:
         no_notes_in_trash_error()
 
@@ -107,7 +140,12 @@ def trash(command, restore, view, delete, sort_by, order):
     help="It can be used when you have written the whole note from the command"
         " itself and not from the editor."
 )
-@click.option("-e", "--editor", default=get_default_editor(), show_default=True)
+@click.option(
+    "-e",
+    "--editor",
+    default=get_default_editor(),
+    show_default=True
+)
 def add(title, body, finished, editor):
     from ..exceptions import NoteFileNotSaved
     from ..logs import done_log
@@ -166,8 +204,17 @@ def del_command(note_id):
 
 
 @cli.command(name="all")
-@click.argument("category", default="notes", type=click.Choice(["notes", "trash"]))
-@click.option("-s", "--sort-by", default="alphabet", type=click.Choice(SORTING_OPTIONS))
+@click.argument(
+    "category",
+    default="notes",
+    type=click.Choice(["notes", "trash"])
+)
+@click.option(
+    "-s",
+    "--sort-by",
+    default="alphabet",
+    type=click.Choice(SORTING_OPTIONS)
+)
 @click.option("--asc/--desc", "order", default=True)
 def all_command(category, sort_by, order):
     from ..logs import pager_view
@@ -181,13 +228,20 @@ def all_command(category, sort_by, order):
     order = "ASC" if order else "DESC"
     sort_by = fix_sort_by_name(sort_by)
 
-    notes = "\n".join(f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_all_func(sort_by, order))
+    notes = "\n".join(
+        f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]"
+        for x in get_all_func(sort_by, order)
+    )
 
     pager_view(notes)
 
 
 @cli.command(name="import")
-@click.argument("filenames", type=click.Path(exists=True, dir_okay=False), nargs=-1)
+@click.argument(
+    "filenames",
+    type=click.Path(exists=True, dir_okay=False),
+    nargs=-1
+)
 @click.option("-t", "--title")
 @click.option("--filename-as-title", is_flag=True)
 def import_command(filenames, title, filename_as_title):

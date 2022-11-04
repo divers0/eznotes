@@ -8,7 +8,8 @@ from eznotes.const import VERSION
 def remove_pycache(path, ignore=[], paths=[]):
     contents = [os.path.join(path, x) for x in os.listdir(path)]
     for content in contents:
-        if os.path.isdir(content) and os.path.basename(content) == "__pycache__":
+        if os.path.isdir(content) and \
+            os.path.basename(content) == "__pycache__":
             shutil.rmtree(content)
         elif os.path.isdir(content) and content not in ignore:
             remove_pycache(content, paths)

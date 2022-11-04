@@ -19,11 +19,27 @@ def import_from_zip(filename):
             unrecognized_zip_file_error(filename)
 
         for note in database["notes"]:
-            row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'])
-            cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 0, NULL)", row)
+            row = (
+                make_id(f"{note['title']}\n{note['body']}"),
+                note["title"],
+                note["body"],
+                note["date_modified"],
+                note["date_created"]
+            )
+            cur.execute(
+                "INSERT INTO notes VALUES(?, ?, ?, ?, ?, 0, NULL)",
+                row
+            )
 
         for note in database["trash"]:
-            row = (make_id(f"{note['title']}\n{note['body']}"), note['title'], note['body'], note['date_modified'], note['date_created'], note['trash_date'])
+            row = (
+                make_id(f"{note['title']}\n{note['body']}"),
+                note["title"],
+                note["body"],
+                note["date_modified"],
+                note["date_created"],
+                note["trash_date"]
+            )
             cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 1, ?)", row)
 
     conn.commit()
@@ -33,7 +49,8 @@ def import_plain_text(title, filename_as_title, filename):
     with open(filename) as f:
         note_file = f.read()
 
-    last_modified_date = datetime.fromtimestamp(os.stat(filename)[-2]).strftime("%Y-%m-%d %H:%M:%S")
+    last_modified_date = datetime.fromtimestamp(
+        os.stat(filename)[-2]).strftime("%Y-%m-%d %H:%M:%S")
 
     if title or filename_as_title:
         if filename_as_title and filename.endswith(".txt"):

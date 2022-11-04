@@ -24,7 +24,11 @@ def insert(row, date=None):
         row.insert(3, date)
         cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, ?, ?)", row)
     else:
-        cur.execute("INSERT INTO notes VALUES(?, ?, ?, datetime('now', 'localtime'), datetime('now', 'localtime'), ?, ?)", row)
+        cur.execute(
+            "INSERT INTO notes VALUES(?, ?, ?, datetime('now', 'localtime'), "
+            "datetime('now', 'localtime'), ?, ?)",
+            row
+        )
     conn.commit()
 
 

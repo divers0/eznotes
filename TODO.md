@@ -50,7 +50,7 @@
  - [ ] add a `search` command
  - [x] refactor import
  - [ ] merge the title and body columns (idk why i decided that they would be two separate things in the first place)
- - [ ] clean
-      - [ ] in logs, make self.logs tuples not lists
-      - [ ] try to prevent any line to be more than 80 characters (there are some in logs)
-      - [ ] clean const.py
+ - [x] clean
+      - [x] in logs, make self.logs tuples not lists
+      - [x] try to prevent any line to be more than 80 characters (there are some in logs)
+      - [x] clean const.py

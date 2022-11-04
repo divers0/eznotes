@@ -14,7 +14,10 @@ def empty_trash(print_done=True):
 
     console = Console()
 
-    notes = "\n".join(f"\t[bold blue]{x[0]}[/] - [green]{x[1]}[/]" for x in get_trash_notes("alphabetical", "ASC"))
+    notes = "\n".join(
+        f"\t[bold blue]{x[0]}[/] - [green]{x[1]}[/]"
+        for x in get_trash_notes("alphabetical", "ASC")
+    )
 
     console.print(notes)
 

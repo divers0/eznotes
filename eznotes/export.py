@@ -28,8 +28,12 @@ def export_note(note_id, path):
     date_created, time_created = get_note_date_created(note_id)[0].split(" ")
     date_modified, time_modified = get_note_date_modified(note_id)[0].split(" ")
 
-    created_timestamp = datetime(*map(int, date_created.split('-')), *map(int, time_created.split(':'))).timestamp()
-    modified_timestamp = datetime(*map(int, date_modified.split('-')), *map(int, time_modified.split(':'))).timestamp()
+    created_timestamp = datetime(
+        *map(int, date_created.split("-")),
+        *map(int, time_created.split(":"))).timestamp()
+    modified_timestamp = datetime(
+        *map(int, date_modified.split("-")),
+        *map(int, time_modified.split(":"))).timestamp()
 
     os.utime(path, (created_timestamp, modified_timestamp))
 
@@ -67,7 +71,8 @@ def export_notes_to_zip(path):
         })
 
     # Adding the notes in trash
-    for _, title, body, date_modified, date_created, _, trash_date in trash_rows:
+    for _, title, body, date_modified, date_created, _, trash_date \
+            in trash_rows:
         notes_dict["trash"].append({
             "title": title,
             "body": body,
@@ -79,6 +84,9 @@ def export_notes_to_zip(path):
     with open(os.path.join(TEMP_ZIP_DIR_PATH, "notes.json"), "w") as f:
         f.write(json.dumps(notes_dict, indent=4))
 
-    shutil.make_archive(os.path.splitext(path)[0] if path.endswith(".zip") else path, "zip", TEMP_DIR_PATH)
+    shutil.make_archive(
+        os.path.splitext(path)[0] if path.endswith(".zip") else path,
+        "zip", TEMP_DIR_PATH
+    )
 
     shutil.rmtree(TEMP_DIR_PATH)

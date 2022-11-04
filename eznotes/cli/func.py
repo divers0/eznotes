@@ -36,7 +36,10 @@ def run_relevant_func(note_id=None, **args):
     from ..notes import edit_note
     from ..prompt import export_note_prompt
 
-    func = [(name, get_relevant_func(name)) for name, true in zip(args.keys(), args.values()) if true][0]
+    func = [
+        (name, get_relevant_func(name))
+        for name, true in zip(args.keys(), args.values()) if true
+    ][0]
     if func[0] == "edit":
         from ..config.editor import get_default_editor
 

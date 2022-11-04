@@ -53,7 +53,9 @@ def edit_note(note_id, editor):
     conn, cur = get_conn_and_cur()
 
     cur.execute(
-        f"UPDATE notes SET title = ?, body = ?, date_modified = datetime('now', 'localtime') WHERE id LIKE '{note_id}%'",
+        "UPDATE notes SET title = ?, body = ?, "
+        "date_modified = datetime('now', 'localtime') "
+        f"WHERE id LIKE '{note_id}%'",
         (title, body),
     )
     conn.commit()

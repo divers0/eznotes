@@ -23,7 +23,12 @@ def notes_prompt(note_id):
 
     choices = flatten(NOTES_VALID_INPUTS.values())+["exit"]
     while True:
-        user_inp = NoPromptSuffixPrompt.ask(f"[bold white]\[{'/'.join(choices)}]", choices=choices, default="edit", show_choices=False)
+        user_inp = NoPromptSuffixPrompt.ask(
+            f"[bold white]\[{'/'.join(choices)}]",
+            choices=choices,
+            default="edit",
+            show_choices=False
+        )
 
         if user_inp == "exit":
             return
@@ -70,7 +75,12 @@ def trash_prompt(note_id):
 
     choices = flatten(TRASH_VALID_INPUTS.values())+["exit"]
     while True:
-        user_inp = NoPromptSuffixPrompt.ask(f"[bold white]\[{'/'.join(choices)}]", choices=choices, default="delete", show_choices=False)
+        user_inp = NoPromptSuffixPrompt.ask(
+            f"[bold white]\[{'/'.join(choices)}]",
+            choices=choices,
+            default="delete",
+            show_choices=False
+        )
 
         if user_inp == "exit":
             return

@@ -6,7 +6,10 @@ def get_all_notes(sort_by, order):
     cur = get_conn_and_cur()[1]
     if sort_by == "alphabetical":
         sort_by = "title"
-    cur.execute(f"SELECT * FROM notes WHERE added_to_trash = 0 ORDER BY {sort_by} {order}")
+    cur.execute(
+        "SELECT * FROM notes WHERE added_to_trash = 0 ORDER BY "
+        f"{sort_by} {order}"
+    )
     return cur.fetchall()
 
 

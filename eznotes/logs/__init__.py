@@ -16,10 +16,10 @@ class Log:
 class DefaultEditorLogs(Log):
     def __init__(self):
         super().__init__()
-        self.logs = [
+        self.logs = (
             "Please enter the [bold green]name[/bold green] of your [bold blue]"
             "default editor[/bold blue] [bold](it can be changed later)[/bold]"
-        ]
+        )
 
         self.input_prompt = "[bold]Editor[/bold]:"
 
@@ -31,7 +31,8 @@ class DeleteNoteLogs(Log):
         self.note_id = note_id
         self.title = f"[green]'{self.note_id}'[/] [bold]first 3 lines:[/bold]"
         self.input_prompt =  (
-            "[bold]Are you sure[/bold] you want to [bold red]permanently delete[/bold red]"
+            "[bold]Are you sure[/bold] you want to "
+            "[bold red]permanently delete[/bold red]"
             f" the [green]'{self.note_id}'[/green] note?"
         )
 
@@ -41,19 +42,20 @@ class ListViewLogs(Log):
         super().__init__()
 
         self.options_text = [options_color_coded_text(x) for x in options]
-        self.logs = [
+        self.logs = (
             "[bold]What do you want to do with the note '{note_id}'?",
             "\n".join([f"\t{i+1}. {x}" for i, x in enumerate(self.options_text)])
-        ]
+        )
 
 
 class ExportNoteLogs(Log):
     def __init__(self):
         super().__init__()
 
-        self.logs = [
-            "[bold][green]Where[/green] do you want the [green]note[/green] to be [green]saved[/green]?"
-        ]
+        self.logs = (
+            "[bold][green]Where[/green] do you want the "
+            "[green]note[/green] to be [green]saved[/green]?"
+        )
 
         self.input_prompt = "[bold blue]Where?[/bold blue]"
 
@@ -62,21 +64,24 @@ class EmptyTrashLogs(Log):
     def __init__(self):
         super().__init__()
 
-        self.logs = ["[bold green]Your trash:"]
+        self.logs = ("[bold green]Your trash:")
 
-        self.input_prompt = "[bold]Are you sure[/bold] you want to [bold red]permanently delete all notes in your trash[/bold red]?"
+        self.input_prompt = (
+            "[bold]Are you sure[/bold] you want to "
+            "[bold red]permanently delete all notes in your trash[/bold red]?"
+        )
 
 
 class TurnTrashOffLogs(Log):
     def __init__(self):
         super().__init__()
 
-        self.logs = [
+        self.logs = (
             "Your [bold]trash[/bold] is [bold]not empty[/bold] and you are "
             "trying to turn it [bold red]off[/bold red]"
             "\nYou have to [bold]empty[/bold] your [bold]trash[/bold] "
             "in order to continue:\n"
-        ]
+        )
 
 
 def done_log():
