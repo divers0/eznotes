@@ -18,7 +18,7 @@ class DefaultEditorLogs(Log):
         super().__init__()
         self.logs = (
             "Please enter the [bold green]name[/bold green] of your [bold blue]"
-            "default editor[/bold blue] [bold](it can be changed later)[/bold]"
+            "default editor[/bold blue] [bold](it can be changed later)[/bold]",
         )
 
         self.input_prompt = "[bold]Editor[/bold]:"
@@ -54,7 +54,7 @@ class ExportNoteLogs(Log):
 
         self.logs = (
             "[bold][green]Where[/green] do you want the "
-            "[green]note[/green] to be [green]saved[/green]?"
+            "[green]note[/green] to be [green]saved[/green]?",
         )
 
         self.input_prompt = "[bold blue]Where?[/bold blue]"
@@ -64,7 +64,7 @@ class EmptyTrashLogs(Log):
     def __init__(self):
         super().__init__()
 
-        self.logs = ("[bold green]Your trash:")
+        self.logs = ("[bold green]Your trash:",)
 
         self.input_prompt = (
             "[bold]Are you sure[/bold] you want to "
@@ -80,7 +80,7 @@ class TurnTrashOffLogs(Log):
             "Your [bold]trash[/bold] is [bold]not empty[/bold] and you are "
             "trying to turn it [bold red]off[/bold red]"
             "\nYou have to [bold]empty[/bold] your [bold]trash[/bold] "
-            "in order to continue:\n"
+            "in order to continue:\n",
         )
 
 
