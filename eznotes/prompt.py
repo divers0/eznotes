@@ -8,7 +8,6 @@ class NoPromptSuffixPrompt(Prompt):
 def notes_prompt(note_id):
     from .config.editor import get_default_editor
     from .const import NOTES_VALID_INPUTS
-    from .db.trash import trash_note
     from .export import export_note
     from .logs import ListViewLogs, selected_note_log
     from .notes import edit_note, view_note
@@ -42,7 +41,8 @@ def notes_prompt(note_id):
             view_note(note_id)
 
         elif user_inp in NOTES_VALID_INPUTS["delete"]:
-            trash_note(note_id)
+            from .cli.func import get_relevant_func
+            get_relevant_func("name")(note_id)
             return True
 
         elif user_inp in NOTES_VALID_INPUTS["export"]:
@@ -113,7 +113,7 @@ def export_note_prompt(note_id):
         entered_path = NoPromptSuffixPrompt.ask(logs.input_prompt, default=".")
 
         if os.path.isdir(entered_path):
-            return os.path.join(entered_path, get_note_title(note_id)[0])
+            return os.path.join(entered_path, get_note_title(get_full_note(note_id)))
         elif is_path_writable(entered_path):
             return entered_path
         else:
