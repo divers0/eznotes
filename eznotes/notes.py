@@ -2,7 +2,7 @@ def new_note(title, body, finished, editor):
     import os
 
     from .const import TEMP_FILE_PATH
-    from .db.notes import add_note_to_db
+    from .db import insert
     from .exceptions import NoteFileNotSaved
     from .utils.notes import clean_up_temp_file
 
@@ -12,7 +12,7 @@ def new_note(title, body, finished, editor):
         if body != "":
             preset_text += body
         if finished:
-            add_note_to_db(preset_text)
+            insert(preset_text)
             return
         with open(TEMP_FILE_PATH, "w") as f:
             f.write(preset_text)
@@ -25,7 +25,7 @@ def new_note(title, body, finished, editor):
     with open(TEMP_FILE_PATH, "r") as f:
         text = f.read()
 
-    add_note_to_db(text)
+    insert(text)
 
 
 def edit_note(note_id, editor):
@@ -33,7 +33,7 @@ def edit_note(note_id, editor):
 
     from .const import TEMP_FILE_PATH
     from .db import get_conn_and_cur
-    from .db.notes import get_full_note, get_title_and_body
+    from .db.notes import get_full_note
     from .utils.notes import clean_up_temp_file
 
     full_note = get_full_note(note_id)
@@ -48,15 +48,13 @@ def edit_note(note_id, editor):
 
     clean_up_temp_file()
 
-    title, body = get_title_and_body(edited_note)
-
     conn, cur = get_conn_and_cur()
 
     cur.execute(
-        "UPDATE notes SET title = ?, body = ?, "
+        "UPDATE notes SET text = ?, "
         "date_modified = datetime('now', 'localtime') "
         f"WHERE id LIKE '{note_id}%'",
-        (title, body),
+        (edited_note,),
     )
     conn.commit()
 
@@ -81,7 +79,7 @@ def delete_note(note_id):
 
     panel_print(
         markdown_print(
-            "\n".join(get_full_note(note_id).split("\n")[:4]),
+            "\n".join(get_full_note(note_id).split("\n")[:3]),
             print_=False
         ),
         title=logs.title

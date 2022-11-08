@@ -10,6 +10,7 @@ def trash_note(note_id):
     )
 
     conn.commit()
+    return True
 
 
 def empty_trash():
@@ -33,7 +34,7 @@ def restore_note(note_id):
 def get_trash_notes(sort_by, order):
     cur = get_conn_and_cur()[1]
     if sort_by == "alphabetical":
-        sort_by = "title"
+        sort_by = "text"
     cur.execute(
         "SELECT * FROM notes WHERE added_to_trash = 1 ORDER BY "
         f"{sort_by} {order}"

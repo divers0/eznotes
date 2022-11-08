@@ -49,8 +49,9 @@
  - [x] move the VERSION const to the const.py, then add a '--version' flag
  - [ ] add a `search` command
  - [x] refactor import
- - [ ] merge the title and body columns (idk why i decided that they would be two separate things in the first place)
+ - [x] merge the title and body columns (idk why i decided that they would be two separate things in the first place)
  - [x] clean
       - [x] in logs, make self.logs tuples not lists
       - [x] try to prevent any line to be more than 80 characters (there are some in logs)
       - [x] clean const.py
+ - [ ] in the all comman when there are no notes, show the same errors in list view

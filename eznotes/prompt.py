@@ -42,8 +42,7 @@ def notes_prompt(note_id):
 
         elif user_inp in NOTES_VALID_INPUTS["delete"]:
             from .cli.func import get_relevant_func
-            get_relevant_func("name")(note_id)
-            return True
+            return get_relevant_func("delete")(note_id)
 
         elif user_inp in NOTES_VALID_INPUTS["export"]:
             from .logs.error import file_not_found_error
@@ -100,11 +99,12 @@ def trash_prompt(note_id):
 def export_note_prompt(note_id):
     import os
 
-    from .db.notes import get_note_title
+    from .db.notes import get_full_note
     from .logs import ExportNoteLogs
     from .logs.error import error_print
     from .logs.messages import file_not_found_error_message
     from .utils import is_path_writable
+    from .utils.notes import get_note_title
 
     logs = ExportNoteLogs()
     logs.next_log()

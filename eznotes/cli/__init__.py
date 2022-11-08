@@ -39,16 +39,18 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
         from ..exceptions import NoNotesInDatabase
         from ..logs import done_log
         from ..logs.error import no_notes_in_db_error
-        from ..utils.notes import fix_sort_by_name
+        from ..utils.notes import fix_sort_by_name, get_note_title
         from .func import list_view
 
         order = "ASC" if order else "DESC"
         sort_by = fix_sort_by_name(sort_by)
 
         notes = "\n".join(
-            f"{x[0][:8]} - {x[1]}"
+            f"{x[0][:8]} - {get_note_title(x[1])}"
             for x in get_all_notes(sort_by, order)
         )
+        # print("notes: ", notes)
+        # return
 
         try:
             print_done = list_view(
@@ -90,7 +92,7 @@ def trash(command, restore, view, delete, sort_by, order):
                               trash_is_already_empty_error,
                               trash_is_turned_off_error)
     from ..trash import trash_is_on
-    from ..utils.notes import fix_sort_by_name
+    from ..utils.notes import fix_sort_by_name, get_note_title
     from .func import list_view
 
     if command == "empty":
@@ -112,7 +114,7 @@ def trash(command, restore, view, delete, sort_by, order):
     sort_by = fix_sort_by_name(sort_by)
 
     notes = "\n".join(
-        f"{x[0][:8]} - {x[1]}"
+        f"{x[0][:8]} - {get_note_title(x[1])}"
         for x in get_trash_notes(sort_by, order)
     )
 
@@ -150,6 +152,7 @@ def add(title, body, finished, editor):
     from ..exceptions import NoteFileNotSaved
     from ..logs import done_log
     from ..notes import new_note
+    from ..utils.notes import add_title_and_body_together
 
     if title == "":
         title = None
@@ -218,7 +221,7 @@ def del_command(note_id):
 @click.option("--asc/--desc", "order", default=True)
 def all_command(category, sort_by, order):
     from ..logs import pager_view
-    from ..utils.notes import fix_sort_by_name
+    from ..utils.notes import fix_sort_by_name, get_note_title
 
     if category == "notes":
         from ..db.notes import get_all_notes as get_all_func
@@ -229,7 +232,7 @@ def all_command(category, sort_by, order):
     sort_by = fix_sort_by_name(sort_by)
 
     notes = "\n".join(
-        f"[bold blue]{x[0]}[/] - [green]{x[1]}[/]"
+        f"[bold blue]{x[0]}[/] - [green]{get_note_title(x[1])}[/]"
         for x in get_all_func(sort_by, order)
     )
 

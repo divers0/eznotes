@@ -1,7 +1,6 @@
 import os
 
 from ..const import DATABASE_PATH, FIRST_NOTE_TEXT
-from ..utils.notes import get_title_and_body
 from . import get_conn_and_cur, insert
 
 
@@ -20,13 +19,12 @@ def db_initiate():
     cur.execute(
         """CREATE TABLE IF NOT EXISTS notes(
                     id TEXT NOT NULL PRIMARY KEY,
-                    title TEXT,
-                    body TEXT,
+                    text TEXT,
                     date_modified TEXT,
                     date_created TEXT,
                     added_to_trash INTEGER,
                     trash_date TEXT);"""
     )
 
-    insert(get_title_and_body(FIRST_NOTE_TEXT))
+    insert(FIRST_NOTE_TEXT)
     conn.commit()

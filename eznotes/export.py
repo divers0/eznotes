@@ -8,13 +8,13 @@ from .db.notes import (get_all_note_ids, get_all_notes, get_all_trash_ids,
                        get_full_note, get_note_date_created,
                        get_note_date_modified)
 from .db.trash import get_trash_notes
-from .utils.notes import get_title_and_body
+from .utils.notes import get_note_title
 
 
 def export_note(note_id, path):
     full_note = get_full_note(note_id)
 
-    title = get_title_and_body(full_note)[0]
+    title = get_note_title(full_note)
 
     if os.path.isdir(path):
         path = os.path.join(path, title)
@@ -57,25 +57,23 @@ def export_notes_to_zip(path):
 
     notes_dict = {"notes": [], "trash": []}
 
-    rows = get_all_notes("title", "ASC")
-    trash_rows = get_trash_notes("title", "ASC")
+    rows = get_all_notes("text", "ASC")
+    trash_rows = get_trash_notes("text", "ASC")
 
     # Adding the notes
-    for _, title, body, date_modified, date_created, _, _ in rows:
+    for _, text, date_modified, date_created, _, _ in rows:
         notes_dict["notes"].append({
-            "title": title,
-            "body": body,
+            "text": text,
             "date_modified": date_modified,
             "date_created": date_created,
 
         })
 
     # Adding the notes in trash
-    for _, title, body, date_modified, date_created, _, trash_date \
+    for _, text, date_modified, date_created, _, trash_date \
             in trash_rows:
         notes_dict["trash"].append({
-            "title": title,
-            "body": body,
+            "text": text,
             "date_modified": date_modified,
             "date_created": date_created,
             "trash_date": trash_date,

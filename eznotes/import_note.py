@@ -3,8 +3,7 @@ import os
 from datetime import datetime
 from zipfile import ZipFile
 
-from .db import get_conn_and_cur, make_id
-from .db.notes import add_note_to_db
+from .db import get_conn_and_cur, insert, make_id
 from .logs.error import unrecognized_zip_file_error
 from .utils.notes import add_new_title_to_text
 
@@ -20,27 +19,25 @@ def import_from_zip(filename):
 
         for note in database["notes"]:
             row = (
-                make_id(f"{note['title']}\n{note['body']}"),
-                note["title"],
-                note["body"],
+                make_id(note["text"]),
+                note["text"],
                 note["date_modified"],
                 note["date_created"]
             )
             cur.execute(
-                "INSERT INTO notes VALUES(?, ?, ?, ?, ?, 0, NULL)",
+                "INSERT INTO notes VALUES(?, ?, ?, ?, 0, NULL)",
                 row
             )
 
         for note in database["trash"]:
             row = (
-                make_id(f"{note['title']}\n{note['body']}"),
-                note["title"],
-                note["body"],
+                make_id(note["text"]),
+                note["text"],
                 note["date_modified"],
                 note["date_created"],
                 note["trash_date"]
             )
-            cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, ?, 1, ?)", row)
+            cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, 1, ?)", row)
 
     conn.commit()
 
@@ -60,4 +57,4 @@ def import_plain_text(title, filename_as_title, filename):
             title if title else filename.replace("_", " ").replace("-", " ")
         )
 
-    add_note_to_db(note_file, last_modified_date)
+    insert(note_file, last_modified_date)

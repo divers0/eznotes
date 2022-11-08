@@ -5,6 +5,7 @@ def empty_trash(print_done=True):
     from .db.trash import empty_trash, get_trash_notes, trash_is_empty
     from .exceptions import TrashIsAlreadyEmpty
     from .logs import EmptyTrashLogs, done_log
+    from .utils.notes import get_note_title
 
     if trash_is_empty():
         raise TrashIsAlreadyEmpty
@@ -15,7 +16,7 @@ def empty_trash(print_done=True):
     console = Console()
 
     notes = "\n".join(
-        f"\t[bold blue]{x[0]}[/] - [green]{x[1]}[/]"
+        f"\t[bold blue]{x[0]}[/] - [green]{get_note_title(x[1])}[/]"
         for x in get_trash_notes("alphabetical", "ASC")
     )
 

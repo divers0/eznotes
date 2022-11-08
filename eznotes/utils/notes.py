@@ -1,5 +1,9 @@
-def get_title_and_body(note_text):
-    return note_text.split("\n")[0].strip(), "\n".join(note_text.split("\n")[1:])
+def get_note_title(note):
+    return note.split("\n")[0]
+
+
+def add_title_and_body_together(title, body):
+    return f"{title}\n{body}"
 
 
 def add_new_title_to_text(note, new_title):
