@@ -1,6 +1,7 @@
 import click
 
 from ..config.editor import get_default_editor
+from ..logs.help_messages import *
 from ..const import SORTING_OPTIONS
 from ..trash import trash_is_on
 
@@ -49,8 +50,6 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
             f"{x[0][:8]} - {get_note_title(x[1])}"
             for x in get_all_notes(sort_by, order)
         )
-        # print("notes: ", notes)
-        # return
 
         try:
             print_done = list_view(
@@ -68,7 +67,7 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
             done_log()
 
 
-@cli.command()
+@cli.command(help=trash_help_message)
 @click.argument(
     "command",
     default="",
@@ -133,7 +132,7 @@ def trash(command, restore, view, delete, sort_by, order):
         done_log()
 
 
-@cli.command()
+@cli.command(help=add_help_message)
 @click.argument("title", default="")
 @click.argument("body", default="")
 @click.option(
@@ -152,7 +151,6 @@ def add(title, body, finished, editor):
     from ..exceptions import NoteFileNotSaved
     from ..logs import done_log
     from ..notes import new_note
-    from ..utils.notes import add_title_and_body_together
 
     if title == "":
         title = None
@@ -162,18 +160,18 @@ def add(title, body, finished, editor):
 
         finished_without_text_error()
 
-
     try:
-        new_note(title, body, finished, editor)
+        print_done = new_note(title, body, finished, editor)
     except NoteFileNotSaved:
         from ..logs.error import note_file_not_saved_error
 
         note_file_not_saved_error()
 
-    done_log()
+    if print_done:
+        done_log()
 
 
-@cli.command()
+@cli.command(help=edit_help_message)
 @click.argument("note_id")
 @click.option("--editor", default=get_default_editor(), show_default=True)
 def edit(note_id, editor):
@@ -182,7 +180,7 @@ def edit(note_id, editor):
     note_id_command(note_id, get_relevant_func("edit"), editor)
 
 
-@cli.command()
+@cli.command(help=view_help_message)
 @click.argument("note_id")
 def view(note_id):
     from .func import get_relevant_func, note_id_command
@@ -190,7 +188,7 @@ def view(note_id):
     note_id_command(note_id, get_relevant_func("view"))
 
 
-@cli.command()
+@cli.command(help=delete_help_message)
 @click.argument("note_id")
 def delete(note_id):
     from .func import get_relevant_func, note_id_command
@@ -206,7 +204,7 @@ def del_command(note_id):
     note_id_command(note_id, get_relevant_func("delete"))
 
 
-@cli.command(name="all")
+@cli.command(name="all", help=all_help_message)
 @click.argument(
     "category",
     default="notes",
@@ -225,8 +223,10 @@ def all_command(category, sort_by, order):
 
     if category == "notes":
         from ..db.notes import get_all_notes as get_all_func
+        from ..logs.error import no_notes_in_db_error as no_notes_error
     else:
         from ..db.trash import get_trash_notes as get_all_func
+        from ..logs.error import no_notes_in_trash_error as no_notes_error
 
     order = "ASC" if order else "DESC"
     sort_by = fix_sort_by_name(sort_by)
@@ -236,10 +236,13 @@ def all_command(category, sort_by, order):
         for x in get_all_func(sort_by, order)
     )
 
+    if notes == "":
+        no_notes_error()
+
     pager_view(notes)
 
 
-@cli.command(name="import")
+@cli.command(name="import", help=import_help_message)
 @click.argument(
     "filenames",
     type=click.Path(exists=True, dir_okay=False),
@@ -250,9 +253,10 @@ def all_command(category, sort_by, order):
 def import_command(filenames, title, filename_as_title):
     import magic
 
-    from ..import_note import import_from_zip, import_plain_text
+    from ..import_note import (import_from_dict, import_from_zip,
+                               import_plain_text)
     from ..logs import done_log
-    from ..logs.error import error_print
+    from ..logs.error import error_print, unrecognized_file_error
     from ..logs.messages import note_file_is_binary_error_message
     from ..utils import is_file_binary
 
@@ -262,18 +266,31 @@ def import_command(filenames, title, filename_as_title):
         if magic.from_file(filename, mime=True) == "application/zip":
             import_from_zip(filename)
 
-        # check if the file is a executable
+        # check if the file is binary
         elif is_file_binary(filename):
             error_print(note_file_is_binary_error_message)
             print_done = False
 
+        elif filename.endswith(".json"):
+            import json
+
+            with open(filename) as f:
+                try:
+                    database = json.load(f)
+                except json.decoder.JSONDecodeError:
+                    unrecognized_file_error(filename)
+
+            try:
+                import_from_dict(database)
+            except KeyError:
+                unrecognized_file_error(filename)
         else:
             import_plain_text(title, filename_as_title, filename)
     if print_done:
         done_log()
 
 
-@cli.command()
+@cli.command(help=export_help_message)
 @click.argument("note_id")
 @click.argument("path", default=".", type=click.Path(exists=False))
 def export(note_id, path):
@@ -302,15 +319,17 @@ def export(note_id, path):
     done_log()
 
 
-@cli.command()
+@cli.command(help=changeeditor_help_message)
 @click.argument("new_editor")
 def changeeditor(new_editor):
     from ..config.editor import change_default_editor
     from ..exceptions import ExecutableDoesNotExist
+    from ..logs import done_log
     from ..logs.error import executable_does_not_exist_error
 
     try:
         change_default_editor(new_editor)
     except ExecutableDoesNotExist:
         executable_does_not_exist_error(new_editor)
+    done_log()
 

@@ -4,42 +4,47 @@ from datetime import datetime
 from zipfile import ZipFile
 
 from .db import get_conn_and_cur, insert, make_id
-from .logs.error import unrecognized_zip_file_error
+from .logs.error import unrecognized_file_error
 from .utils.notes import add_new_title_to_text
 
 
-def import_from_zip(filename):
+def import_from_dict(database):
     conn, cur = get_conn_and_cur()
+
+    for note in database["notes"]:
+        row = (
+            make_id(note["text"]),
+            note["text"],
+            note["date_modified"],
+            note["date_created"]
+        )
+        cur.execute(
+            "INSERT INTO notes VALUES(?, ?, ?, ?, 0, NULL)",
+            row
+        )
+
+    for note in database["trash"]:
+        row = (
+            make_id(note["text"]),
+            note["text"],
+            note["date_modified"],
+            note["date_created"],
+            note["trash_date"]
+        )
+        cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, 1, ?)", row)
+
+    conn.commit()
+
+
+def import_from_zip(filename):
 
     with ZipFile(filename) as f:
         try:
             database = json.loads(f.open("notes/notes.json").read())
         except KeyError:
-            unrecognized_zip_file_error(filename)
+            unrecognized_file_error(filename)
 
-        for note in database["notes"]:
-            row = (
-                make_id(note["text"]),
-                note["text"],
-                note["date_modified"],
-                note["date_created"]
-            )
-            cur.execute(
-                "INSERT INTO notes VALUES(?, ?, ?, ?, 0, NULL)",
-                row
-            )
-
-        for note in database["trash"]:
-            row = (
-                make_id(note["text"]),
-                note["text"],
-                note["date_modified"],
-                note["date_created"],
-                note["trash_date"]
-            )
-            cur.execute("INSERT INTO notes VALUES(?, ?, ?, ?, 1, ?)", row)
-
-    conn.commit()
+    import_from_dict(database)
 
 
 def import_plain_text(title, filename_as_title, filename):

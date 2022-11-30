@@ -70,7 +70,7 @@ def list_view(notes, is_trash, **commands):
     selected_note = (
         os.popen(
             f'echo "{notes}" | '
-            'fzf --reverse --preview "eznotes-getfull {1}" '
+            'fzf --with-nth 3.. --reverse --preview "eznotes-getfull {1}" '
             f"--preview-window right,{os.get_terminal_size().columns//2}"
         )
         .read()

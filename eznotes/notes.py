@@ -25,7 +25,9 @@ def new_note(title, body, finished, editor):
     with open(TEMP_FILE_PATH, "r") as f:
         text = f.read()
 
-    insert(text)
+    if text != "":
+        insert(text)
+        return True
 
 
 def edit_note(note_id, editor):
@@ -49,6 +51,11 @@ def edit_note(note_id, editor):
     clean_up_temp_file()
 
     conn, cur = get_conn_and_cur()
+
+    if edited_note == "":
+        cur.execute(f"DELETE FROM notes WHERE id LIKE '{note_id}%'")
+        conn.commit()
+        return
 
     cur.execute(
         "UPDATE notes SET text = ?, "

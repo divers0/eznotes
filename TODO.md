@@ -54,4 +54,4 @@
       - [x] in logs, make self.logs tuples not lists
       - [x] try to prevent any line to be more than 80 characters (there are some in logs)
       - [x] clean const.py
- - [ ] in the all comman when there are no notes, show the same errors in list view
+ - [x] in the all command when there are no notes, show the same errors in list view
