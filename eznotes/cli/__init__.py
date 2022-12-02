@@ -1,8 +1,8 @@
 import click
 
 from ..config.editor import get_default_editor
-from ..logs.help_messages import *
 from ..const import SORTING_OPTIONS
+from ..logs.help_messages import *
 from ..trash import trash_is_on
 
 
@@ -20,7 +20,7 @@ from ..trash import trash_is_on
 @click.pass_context
 def cli(ctx, edit, view, delete, export, sort_by, order, version):
     if version:
-        from ..const import VERSION
+        from .. import VERSION
         return print(VERSION)
 
     if trash_is_on():

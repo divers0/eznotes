@@ -3,7 +3,7 @@ read and write notes inside of your terminal
 
 
 # Install
-**DISCLAIMER: This program has been designed to work on linux. no support is provided to any user on any other OS**
+**DISCLAIMER: This program has been designed to work on linux. no support is provided to any user on any other OS.**
 ## Requirements
  - python
  - [fzf](https://github.com/junegunn/fzf)
@@ -11,10 +11,10 @@ read and write notes inside of your terminal
 
 1. install fzf
 2. after installing fzf you can simply download the the latest release from the [releases page](https://github.com/divers0/eznotes/releases/latest)
-3. after downloading the release, run the following commands
+3. after downloading the release, run the following commands (replace VERSION with the last version)
 ```console
-$ tar xf DOWNLOADED_FILE
-$ cd EXTRACTED_DIRECTORY
+$ tar xf eznotes-VERSION.tar.gz
+$ cd eznotes-VERSION
 $ pip install .
 ```
 

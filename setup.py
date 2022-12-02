@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-from eznotes.const import VERSION
+from eznotes import VERSION
 
 setup(
     name="eznotes",
@@ -13,8 +13,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "eznotes = eznotes:main",
-            "eznotes-getfull = eznotes.getfull:cli_main",
+            "eznotes = eznotes.entrypoints:main",
+            "eznotes-getfull = eznotes.entrypoints.getfull:cli_main",
         ],
     },
 )

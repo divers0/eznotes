@@ -2,7 +2,7 @@ import os
 import shutil
 import tarfile
 
-from eznotes.const import VERSION
+from eznotes import VERSION
 
 
 def remove_pycache(path, paths=[]):

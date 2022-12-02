@@ -3,8 +3,8 @@ import sys
 
 from rich.console import Console
 
-from .db.notes import get_full_note
-from .logs import markdown_print
+from ..db.notes import get_full_note
+from ..logs import markdown_print
 
 
 def cli_main():
