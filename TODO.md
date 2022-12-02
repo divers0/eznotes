@@ -42,8 +42,7 @@
       - [x] add an empty trash command
       - [x] permanently delete notes that have been trashed more than 30 days
       - [x] export trash in `eznotes export all`
- - [ ] better `--help` output
- - [ ] add colors to the fzf (that opens the possibility to themes in the future?)
+ - [x] better `--help` output
  - [x] add a note by default to the db
  - [x] add the ability to turn the trash on or off
  - [x] move the VERSION const to the const.py, then add a '--version' flag

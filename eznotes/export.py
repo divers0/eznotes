@@ -14,7 +14,7 @@ from .utils.notes import get_note_title
 def export_note(note_id, path):
     full_note = get_full_note(note_id)
 
-    title = get_note_title(full_note)
+    title = get_note_title(full_note).replace("/", "-")
 
     if os.path.isdir(path):
         path = os.path.join(path, title)

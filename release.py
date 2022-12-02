@@ -5,24 +5,24 @@ import tarfile
 from eznotes.const import VERSION
 
 
-def remove_pycache(path, ignore=[], paths=[]):
+def remove_pycache(path, paths=[]):
     contents = [os.path.join(path, x) for x in os.listdir(path)]
     for content in contents:
         if os.path.isdir(content) and \
             os.path.basename(content) == "__pycache__":
             shutil.rmtree(content)
-        elif os.path.isdir(content) and content not in ignore:
+        elif os.path.isdir(content) and content:
             remove_pycache(content, paths)
         paths.append(content)
 
 
 try:
-    os.mkdir("build")
+    os.mkdir("dist")
 except FileExistsError:
-    shutil.rmtree("build")
-    os.mkdir("build")
+    shutil.rmtree("dist")
+    os.mkdir("dist")
 
-os.chdir("build")
+os.chdir("dist")
 
 THIS_VERSION_NAME = f"eznotes-{VERSION}"
 RELEASE_PATH = f"{THIS_VERSION_NAME}.tar.gz"

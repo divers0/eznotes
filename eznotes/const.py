@@ -1,6 +1,6 @@
 from os.path import dirname, expanduser, join
 
-VERSION = "0.9.5"
+VERSION = "1.0.0"
 
 DEBUG = True
 
