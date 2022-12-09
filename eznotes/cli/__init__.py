@@ -152,8 +152,7 @@ def add(title, body, finished, editor):
     from ..logs import done_log
     from ..notes import new_note
 
-    if title == "":
-        title = None
+    title = None if title == "" else title
 
     if not title and finished:
         from ..logs.error import finished_without_text_error

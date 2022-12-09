@@ -7,7 +7,7 @@ def executable_exists(name):
     return which(name) is not None
 
 
-# this function can be imporved so much over time
+# this function can be improved so much over time
 # it could have improved a lot right now if i knew more regex but unfortunately
 # my regex knowledge ends here.
 def text_is_markdown(text):
@@ -43,7 +43,7 @@ def is_path_writable(path):
 
 
 def find_default_editor_executable():
-    editors = ("nano", "vim", "emacs")
+    editors = ("nano", "vim")
     for editor in editors:
         if executable_exists(editor):
             return editor

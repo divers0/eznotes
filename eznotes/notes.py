@@ -56,14 +56,14 @@ def edit_note(note_id, editor):
         cur.execute(f"DELETE FROM notes WHERE id LIKE '{note_id}%'")
         conn.commit()
         return
-
-    cur.execute(
-        "UPDATE notes SET text = ?, "
-        "date_modified = datetime('now', 'localtime') "
-        f"WHERE id LIKE '{note_id}%'",
-        (edited_note,),
-    )
-    conn.commit()
+    if edited_note != full_note:
+        cur.execute(
+            "UPDATE notes SET text = ?, "
+            "date_modified = datetime('now', 'localtime') "
+            f"WHERE id LIKE '{note_id}%'",
+            (edited_note,),
+        )
+        conn.commit()
 
 
 def view_note(note_id):

@@ -22,4 +22,6 @@ trash_is_turned_off_error_message = "Trash is turned off. run [bold italic]eznot
 
 trash_is_already_empty_error_message = "Trash is already empty."
 
+not_on_linux_error_message = "This program has been designed to work on linux."
+
 __all__ = [x for x in list(locals()) if x.endswith("error_message")]

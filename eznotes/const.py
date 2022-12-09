@@ -2,14 +2,14 @@ from os.path import dirname, expanduser, join
 
 DEBUG = True
 
-CONFIG_FOLDER_PATH = join(expanduser("~"), ".config", "eznotes")
+CONFIG_DIR_PATH = join(expanduser("~"), ".config", "eznotes")
 
 if DEBUG:
     DATABASE_PATH = join(dirname(dirname(__file__)), "notes.db")
 else:
-    DATABASE_PATH = join(CONFIG_FOLDER_PATH, "notes.db")
+    DATABASE_PATH = join(CONFIG_DIR_PATH, "notes.db")
 
-CONFIG_FILE_PATH = join(CONFIG_FOLDER_PATH, "config.json")
+CONFIG_FILE_PATH = join(CONFIG_DIR_PATH, "config.json")
 
 TEMP_FILE_PATH = "/tmp/.eznotes_tmp"
 

@@ -64,3 +64,7 @@ def trash_is_turned_off_error():
 
 def trash_is_already_empty_error():
     _error_exit(trash_is_already_empty_error_message, 0)
+
+
+def not_on_linux_error():
+    _error_exit(not_on_linux_error_message)

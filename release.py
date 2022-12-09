@@ -11,7 +11,7 @@ def remove_pycache(path, paths=[]):
         if os.path.isdir(content) and \
             os.path.basename(content) == "__pycache__":
             shutil.rmtree(content)
-        elif os.path.isdir(content) and content:
+        elif os.path.isdir(content):
             remove_pycache(content, paths)
         paths.append(content)
 
