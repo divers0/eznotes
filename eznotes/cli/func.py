@@ -67,11 +67,12 @@ def list_view(notes, is_trash, **commands):
         from ..exceptions import NoNotesInDatabase
         raise NoNotesInDatabase
 
+    width = os.get_terminal_size().columns // 2
     selected_note = (
         os.popen(
             f'echo "{notes}" | '
-            'fzf --with-nth 3.. --reverse --preview "eznotes-getfull {1}" '
-            f"--preview-window right,{os.get_terminal_size().columns//2}"
+            'fzf --with-nth 3.. --reverse --preview "eznotes-getfull {1}'
+            f' {width}" --preview-window right,{width}'
         )
         .read()
         .strip()
