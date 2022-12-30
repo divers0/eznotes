@@ -34,7 +34,7 @@ TRASH_VALID_INPUTS = {
 
 SORTING_OPTIONS = ("alphabet", "created", "modified")
 
-FIRST_NOTE_TEXT = """# welcome the eznotes
+FIRST_NOTE_TEXT = """# welcome to eznotes
 ## hi there!
 
 you can try some of the features on this note (keep delete for the last one)
