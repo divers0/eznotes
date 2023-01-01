@@ -5,15 +5,14 @@ import tarfile
 from eznotes import VERSION
 
 
-def remove_pycache(path, paths=[]):
+def remove_pycache(path):
     contents = [os.path.join(path, x) for x in os.listdir(path)]
     for content in contents:
         if os.path.isdir(content) and \
             os.path.basename(content) == "__pycache__":
             shutil.rmtree(content)
         elif os.path.isdir(content):
-            remove_pycache(content, paths)
-        paths.append(content)
+            remove_pycache(content)
 
 
 try:
