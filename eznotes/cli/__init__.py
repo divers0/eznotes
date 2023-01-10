@@ -15,10 +15,11 @@ from ..trash import trash_is_on
     "-s", "--sort-by", default="modified",
     type=click.Choice(SORTING_OPTIONS)
 )
+@click.option("-l", "--no-preview", is_flag=True)
 @click.option("--asc/--desc", "order", default=True)
 @click.option("--version", is_flag=True)
 @click.pass_context
-def cli(ctx, edit, view, delete, export, sort_by, order, version):
+def cli(ctx, edit, view, delete, export, sort_by, no_preview, order, version):
     if version:
         from .. import VERSION
         return print(VERSION)
@@ -55,6 +56,7 @@ def cli(ctx, edit, view, delete, export, sort_by, order, version):
             print_done = list_view(
                 notes,
                 False,
+                no_preview,
                 edit=edit,
                 view=view,
                 delete=delete,
@@ -331,4 +333,3 @@ def changeeditor(new_editor):
     except ExecutableDoesNotExist:
         executable_does_not_exist_error(new_editor)
     done_log()
-

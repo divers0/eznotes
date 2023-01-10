@@ -60,23 +60,24 @@ def run_relevant_func(note_id=None, **args):
     return func[1](note_id)
 
 
-def list_view(notes, is_trash, **commands):
+def list_view(notes, is_trash, no_preview, **commands):
     from ..prompt import notes_prompt, trash_prompt
 
     if notes == "":
         from ..exceptions import NoNotesInDatabase
         raise NoNotesInDatabase
 
-    width = os.get_terminal_size().columns // 2
-    selected_note = (
-        os.popen(
-            f'echo "{notes}" | '
-            'fzf --with-nth 3.. --reverse --preview "eznotes-getfull {1}'
+    fzf_command = "fzf --with-nth 3.. --reverse"
+
+    if not no_preview:
+        width = os.get_terminal_size().columns // 2
+        preview = (
+            ' --preview "eznotes-getfull {1}'
             f' {width}" --preview-window right,{width}'
         )
-        .read()
-        .strip()
-    )
+        fzf_command += preview
+
+    selected_note = os.popen(f'echo "{notes}" | ' + fzf_command).read().strip()
 
     if selected_note == "":
         return
